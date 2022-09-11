@@ -360,7 +360,7 @@ typedef int64_t 	s64;
 //	// On Linux, define the macro in a Makefile.
 //#endif
 
-
+// Are you serious brudah??
 using namespace std;
 
 

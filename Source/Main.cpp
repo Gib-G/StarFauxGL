@@ -275,16 +275,16 @@ int main()
 	// Load images/3d objects/shaders before the main loop
 	// ===================================================
 
-	if (gModelSky.Load("meshes/space/space.obj") == false)
+	if (gModelSky.Load(ROOT_DIR"Resources\\Meshes\\SpaceBox\\space.obj") == false)
 	{
 		ConsoleWriteErr("Failed to load 3D object");
 	}
 	gArwing.LoadModel();
-	if (gModelAsteroid.Load("meshes/asteroid/asteroid.obj") == false)
+	if (gModelAsteroid.Load(ROOT_DIR"Resources\\Meshes\\Asteroid\\asteroid.obj") == false)
 	{
 		ConsoleWriteErr("Failed to load 3D object");
 	}
-	if (gModelCube.Load("meshes/cube.obj") == false)
+	if (gModelCube.Load(ROOT_DIR"Resources\\Meshes\\Cube\\cube.obj") == false)
 	{
 		ConsoleWriteErr("Failed to load 3D object");
 	}

@@ -1,5 +1,6 @@
 #include "Shader.h"
 #include "FileUtil.h"
+#include "StringUtil.h"
 
 Shader::Shader()
 {
@@ -11,12 +12,12 @@ bool Shader::Load(const string& vertexPath, const string& fragmentPath)
 	string vertexCode;
 	string fragmentCode;
 
-	if (loadFile(vertexPath,vertexCode) == false)
+	if (loadFile(stringReplaceAllTokens(vertexPath, "\\", "/"), vertexCode) == false)
 	{
 		ConsoleWriteErr("Failed to load %s",vertexPath.c_str());
 		return false;
 	}
-	if (loadFile(fragmentPath,fragmentCode) == false)
+	if (loadFile(stringReplaceAllTokens(fragmentPath, "\\", "/"), fragmentCode) == false)
 	{
 		ConsoleWriteErr("Failed to load %s",fragmentPath.c_str());
 		return false;

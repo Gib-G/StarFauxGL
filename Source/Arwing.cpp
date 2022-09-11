@@ -1,10 +1,11 @@
 #include "Arwing.h"
 #include "Camera.h"
+#include "StringUtil.h"
 
 CArwing::CArwing(bool const LoadModelNow)
 {
 	// Loading model.
-	if (LoadModelNow) { if (!Model.Load("meshes/arwing/arwing_starlink.fbx")) std::cout << "Failed to load Arwing 3D model!\n"; }
+	if (LoadModelNow) { if (!Model.Load(ROOT_DIR"Resources\\Meshes\\Arwing\\arwing_starlink.fbx")) std::cout << "Failed to load Arwing 3D model!\n"; }
 
 	// Initial transform. Scaling is performed last only when drawing the model.
 	ModelMatrix = glm::mat4(1.f);
@@ -35,7 +36,8 @@ CArwing::CArwing(bool const LoadModelNow)
 
 void CArwing::LoadModel()
 {
-	if (!Model.Load("meshes/arwing/arwing_starlink.fbx")) std::cout << "Failed to load Arwing 3D model!\n";
+	if (!Model.Load(ROOT_DIR"Resources\\Meshes\\Arwing\\arwing_starlink.fbx")) std::cout << "Failed to load Arwing 3D model!\n";
+	//if (!Model.Load("D:/Utilisateurs/Gibril/Documents/TSP/3A-JIN/MER/MER-a/StarFauxGL/Resources/Meshes/Arwing/arwing_starlink.fbx")) std::cout << "Failed to load Arwing 3D model!\n";
 }
 
 void CArwing::Draw(glm::vec3 const& CameraPosition, glm::mat4 const& View, glm::mat4 const& Projection, glm::vec3 const& LightPosition, glm::vec3 const& LightColor, bool ForceAmbient)

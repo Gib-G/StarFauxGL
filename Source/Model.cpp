@@ -3,6 +3,7 @@
 #include <assimp/postprocess.h>
 #include "Model.h"
 #include "Texture.h"
+#include "StringUtil.h"
 
 Model::Model()
 {}
@@ -17,30 +18,30 @@ void Model::Draw(glm::vec3 const& camPos, const glm::mat4& model, const glm::mat
 
 bool Model::Load(const string& path)
 {
+	string const curratedPath = stringReplaceAllTokens(path, "\\", "/");
 	Assimp::Importer importer;
-	const aiScene*	 scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+	const aiScene*	 scene = importer.ReadFile(curratedPath, aiProcess_Triangulate | aiProcess_FlipUVs);
 
 	if (!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
 		ConsoleWriteErr("Model::loadModel(%s) : failed to load. %s", path.c_str(), importer.GetErrorString());
 		return false;
 	}
+	m_directory = curratedPath.substr(0, curratedPath.find_last_of('/'));
 
-	m_directory = path.substr(0, path.find_last_of('/'));
-
-	if (m_ShaderColorPhong.Load("shaders/phong.vert", "shaders/phong.frag") == false)
+	if (m_ShaderColorPhong.Load(ROOT_DIR"Resources\\Shaders\\phong.vert", ROOT_DIR"Resources\\Shaders\\phong.frag") == false)
 	{
 		ConsoleWriteErr("Failed to load shader");
 	}
-	if (m_ShaderColorAmbient.Load("shaders/ambient_col.vert", "shaders/ambient_col.frag") == false)
+	if (m_ShaderColorAmbient.Load(ROOT_DIR"Resources\\Shaders\\ambient_col.vert", ROOT_DIR"Resources\\Shaders\\ambient_col.frag") == false)
 	{
 		ConsoleWriteErr("Failed to load shader");
 	}
-	if (m_ShaderTextureDiffuse.Load("shaders/diffuse_tex.vert", "shaders/diffuse_tex.frag") == false)
+	if (m_ShaderTextureDiffuse.Load(ROOT_DIR"Resources\\Shaders\\diffuse_tex.vert", ROOT_DIR"Resources\\Shaders\\diffuse_tex.frag") == false)
 	{
 		ConsoleWriteErr("Failed to load shader");
 	}
-	if (m_ShaderTextureAmbient.Load("shaders/ambient_tex.vert", "shaders/ambient_tex.frag") == false)
+	if (m_ShaderTextureAmbient.Load(ROOT_DIR"Resources\\Shaders\\ambient_tex.vert", ROOT_DIR"Resources\\Shaders\\ambient_tex.frag") == false)
 	{
 		ConsoleWriteErr("Failed to load shader");
 	}
