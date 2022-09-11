@@ -294,7 +294,7 @@ int main()
 	gMat4Sky = glm::mat4(1.f);
 	gMat4Sky = glm::scale(gMat4Sky, glm::vec3(2.e5f, 2.e5f, 2.e5f));
 
-	gMat4Cube1 = glm::translate(gMat4Cube1, glm::vec3(0.f, 0.f, -10.f));
+	//gMat4Cube1 = glm::translate(gMat4Cube1, glm::vec3(0.f, 0.f, -10.f));
 	gMat4Cube2 = glm::translate(gMat4Cube2, glm::vec3(0.2f, 10.f, -10.f));
 	rp3d::Transform cubeTransform;
 	cubeTransform.setFromOpenGL(reinterpret_cast<rp3d::decimal*>(&gMat4Cube1));

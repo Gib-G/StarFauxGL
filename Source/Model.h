@@ -15,7 +15,7 @@ class CModel
 		CModel();
 
 		bool Load(const string& path);
-		void Draw(glm::vec3 const& camPos, const glm::mat4& model, const glm::mat4& view, const glm::mat4& proj, const glm::vec3& lightPos, const glm::vec3& lightColor, bool bForceAmbient =false);
+		void Draw(glm::vec3 const& CameraPosition, glm::mat4 const& ModelMatrix, glm::mat4 const& ViewMatrix, glm::mat4 const& ProjectionMatrix, glm::vec3 const& LightPosition, glm::vec3 const& LightColor, bool const ForceAmbient = false);
 		const vector<CMesh>& getMeshs() const;
 
 	private:

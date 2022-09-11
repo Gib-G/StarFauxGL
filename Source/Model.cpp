@@ -8,11 +8,11 @@
 CModel::CModel()
 {}
 
-void CModel::Draw(glm::vec3 const& camPos, const glm::mat4& model, const glm::mat4& view, const glm::mat4& proj, const glm::vec3& lightPos, const glm::vec3& lightColor, bool bForceAmbient/*=false*/)
+void CModel::Draw(glm::vec3 const& CameraPosition, glm::mat4 const& ModelMatrix, glm::mat4 const& ViewMatrix, glm::mat4 const& ProjectionMatrix, glm::vec3 const& LightPosition, glm::vec3 const& LightColor, bool const ForceAmbient)
 {
 	for (auto& m : m_meshes)
 	{
-		m.Draw(camPos, model, view, proj, lightPos, lightColor, bForceAmbient);
+		m.Draw(CameraPosition, ModelMatrix, ViewMatrix, ProjectionMatrix, LightPosition, LightColor, ForceAmbient);
 	}
 }
 
