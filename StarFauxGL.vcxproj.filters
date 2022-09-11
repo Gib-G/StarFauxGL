@@ -52,6 +52,12 @@
     <ClCompile Include="Source\Util.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Entity.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\World.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Arwing.h">
@@ -97,6 +103,12 @@
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\Util.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Entity.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\World.h">
       <Filter>Source</Filter>
     </ClInclude>
   </ItemGroup>
