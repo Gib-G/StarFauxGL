@@ -62,7 +62,7 @@ private:
 	float const MinAngularSpeeds[int(ELocalAxis::EnumCount)] = {0.f, 0.f, 0.f};
 	float AngularSpeeds[int(ELocalAxis::EnumCount)] = {0.f, 0.f, 0.f};
 
-	Model Model;
+	CModel Model;
 	glm::mat4 ModelMatrix = glm::mat4(1.f);
 
 	// Normalizes ModelMatrix[0, 1, and 2].

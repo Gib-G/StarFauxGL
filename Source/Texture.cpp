@@ -1,23 +1,23 @@
 #include "Texture.h"
 #include "CImage.h"
 
-Texture::Texture()
+CTexture::CTexture()
 {
 	m_id = (GLuint)-1;
 }
 
-Texture::~Texture()
+CTexture::~CTexture()
 {
 	// todo
 }
 
-void Texture::Bind(GLenum num)
+void CTexture::Bind(GLenum num)
 {
 	glActiveTexture(num);
 	glBindTexture(GL_TEXTURE_2D, m_id);
 }
 
-bool Texture::Load(const string& filename, GLenum wrap_s, GLenum wrap_t)
+bool CTexture::Load(const string& filename, GLenum wrap_s, GLenum wrap_t)
 {
 	CImage img;
 	if (img.Load(filename) == false)

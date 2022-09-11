@@ -1,15 +1,15 @@
 #pragma once
 #include "Types.h"
 
-class Shader
+class CShader
 {
 	private:
 		GLuint m_programID;
 
 	public:
 
-		Shader();
-		~Shader();
+		CShader();
+		~CShader();
 
 		// use the program
 		bool	Load(const string& vertexPath, const string& fragmentPath);

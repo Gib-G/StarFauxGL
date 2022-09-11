@@ -1,15 +1,15 @@
 #include "Mesh.h"
 
-Mesh::Mesh(	const vector<Vertex>& vertices,
+CMesh::CMesh(	const vector<SVertex>& vertices,
 			const vector<GLuint>& indices,
-			const vector<Texture>& textures,
+			const vector<CTexture>& textures,
 			const glm::mat4& matColors,
 			bool bHasNormals, bool bHasTexCoords, bool bHasColors,
 			bool bHasAmbientTex, bool bHasDiffuseTex, bool bHasSpecularTex,
-			const Shader& shaderColorPhong,
-			const Shader& shaderColorAmbient,
-			const Shader& shaderTextureDiffuse,
-			const Shader& shaderTextureAmbient	)
+			const CShader& shaderColorPhong,
+			const CShader& shaderColorAmbient,
+			const CShader& shaderTextureDiffuse,
+			const CShader& shaderTextureAmbient	)
 	: m_vertices(vertices)
 	, m_indices(indices)
 	, m_textures(textures)
@@ -32,19 +32,19 @@ Mesh::Mesh(	const vector<Vertex>& vertices,
 	glBindVertexArray(m_VAO[0]);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO[0]);
-	glBufferData(GL_ARRAY_BUFFER, m_vertices.size() * sizeof(Vertex), m_vertices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, m_vertices.size() * sizeof(SVertex), m_vertices.data(), GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO[0]);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size() * sizeof(GLuint), m_indices.data(), GL_STATIC_DRAW);
 
 	// vertex positions
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, Position));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(SVertex), (GLvoid*)offsetof(SVertex, Position));
 	glEnableVertexAttribArray(0);
 
 	// vertex normals
 	if (m_bHasNormals)
 	{
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, Normal));
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(SVertex), (GLvoid*)offsetof(SVertex, Normal));
 		glEnableVertexAttribArray(1);
 	}
 	else
@@ -55,7 +55,7 @@ Mesh::Mesh(	const vector<Vertex>& vertices,
 	// vertex texture coordinates
 	if (m_bHasTexCoords)
 	{
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, TexCoords));
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(SVertex), (GLvoid*)offsetof(SVertex, TexCoords));
 		glEnableVertexAttribArray(2);
 	}
 	else
@@ -66,7 +66,7 @@ Mesh::Mesh(	const vector<Vertex>& vertices,
 	// vertex colors
 	if (m_bHasColors)
 	{
-		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, Colors));
+		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(SVertex), (GLvoid*)offsetof(SVertex, Colors));
 		glEnableVertexAttribArray(3);
 	}
 	else
@@ -77,7 +77,7 @@ Mesh::Mesh(	const vector<Vertex>& vertices,
 	glBindVertexArray(0);
 }
 
-void Mesh::Draw(glm::vec3 const& camPos, const glm::mat4& model, const glm::mat4& view, const glm::mat4& proj, const glm::vec3& lightPos, const glm::vec3& lightColor, bool bForceAmbient)
+void CMesh::Draw(glm::vec3 const& camPos, const glm::mat4& model, const glm::mat4& view, const glm::mat4& proj, const glm::vec3& lightPos, const glm::vec3& lightColor, bool bForceAmbient)
 {
 	// Note : Il faut utiliser bForceAmbient à true pour les modeles 3D ayant des normales incohérentes
 

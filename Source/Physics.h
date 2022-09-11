@@ -8,9 +8,9 @@
 #include <bullet/LinearMath/btAlignedObjectArray.h>
 #include <bullet/LinearMath/btHashMap.h>
 
-class Model;
+class CModel;
 
-class Physics
+class CPhysics
 {
 	private:
 		btRigidBody* AddDynamicObjetToPhysic(btCollisionShape* pShape,glm::mat4 transform, glm::vec3 inertia, float mass, float friction);
@@ -27,16 +27,16 @@ class Physics
 
 
 	public:
-		 Physics();
-		~Physics();
+		 CPhysics();
+		~CPhysics();
 
 		void		Initialize();
 		void		Terminate();
 
 		// Ajout / retrait d'objets
 		btRigidBody* AddDynamicSphereToPhysic     (float radius,        glm::mat4 transform, glm::vec3 inertia, float mass, float friction);
-		btRigidBody* AddDynamicConvexHullToPhysic (const Model* pModel, glm::mat4 transform, glm::vec3 inertia, float mass, float friction);
-		btRigidBody* AddStaticConcaveObjetToPhysic(const Model* pModel, glm::mat4 transform);
+		btRigidBody* AddDynamicConvexHullToPhysic (const CModel* pModel, glm::mat4 transform, glm::vec3 inertia, float mass, float friction);
+		btRigidBody* AddStaticConcaveObjetToPhysic(const CModel* pModel, glm::mat4 transform);
 		btRigidBody* AddStaticPlaneObjetToPhysic  ();
 		void		 RemoveObject(btRigidBody* pBody);
 

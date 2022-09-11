@@ -3,7 +3,7 @@
 #include "Shader.h"
 #include "Texture.h"
 
-struct Vertex
+struct SVertex
 {
 	glm::vec3 Position;
 	glm::vec3 Normal;
@@ -11,17 +11,17 @@ struct Vertex
 	glm::vec4 Colors;
 };
 
-class Mesh
+class CMesh
 {
 	public:
-		vector<Vertex>	m_vertices;
+		vector<SVertex>	m_vertices;
 		vector<GLuint>	m_indices;
-		vector<Texture>	m_textures;
+		vector<CTexture>	m_textures;
 		glm::mat4		m_matColors;
 
-		Mesh(const vector<Vertex>&  vertices,
+		CMesh(const vector<SVertex>&  vertices,
 			 const vector<GLuint>&  indices,
-			 const vector<Texture>& textures,
+			 const vector<CTexture>& textures,
 			 const glm::mat4& matColors,
 			 bool bHasNormals,
 			 bool bHasTexCoords,
@@ -29,10 +29,10 @@ class Mesh
 			 bool bHasAmbientTex,
 			 bool bHasdiffuseTex,
 			 bool bHasspecularTex,
-			 const Shader& shaderColorPhong,
-			 const Shader& shaderColorAmbient,
-			 const Shader& shaderTextureDiffuse,
-			 const Shader& shaderTextureAmbient);
+			 const CShader& shaderColorPhong,
+			 const CShader& shaderColorAmbient,
+			 const CShader& shaderTextureDiffuse,
+			 const CShader& shaderTextureAmbient);
 
 		void Draw(glm::vec3 const& camPos, const glm::mat4& model, const glm::mat4& view, const glm::mat4& proj, const glm::vec3& lightPos, const glm::vec3& lightColor, bool bForceAmbient);
 
@@ -46,9 +46,9 @@ class Mesh
 		bool			m_bHasAmbientTex;
 		bool			m_bHasDiffuseTex;
 		bool			m_bHasSpecularTex;
-		const Shader&	m_shaderColorPhong;
-		const Shader&	m_shaderColorAmbient;
-		const Shader&	m_shaderTextureDiffuse;
-		const Shader&	m_shaderTextureAmbient;
+		const CShader&	m_shaderColorPhong;
+		const CShader&	m_shaderColorAmbient;
+		const CShader&	m_shaderTextureDiffuse;
+		const CShader&	m_shaderTextureAmbient;
 };
 

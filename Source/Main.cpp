@@ -41,16 +41,16 @@ rp3d::PhysicsCommon gPhysics;
 rp3d::PhysicsWorld* gWorld;
 
 //Physics		gPhysics;
-Model		gModelSky;
+CModel		gModelSky;
 glm::mat4	gMat4Sky;
 
-Model			gModelCube;
+CModel			gModelCube;
 glm::mat4		gMat4Cube1(1.f);
 rp3d::RigidBody* gCube1RigidBody = nullptr;
 glm::mat4		gMat4Cube2(1.f);
 rp3d::RigidBody* gCube2RigidBody = nullptr;
 
-Model			gModelAsteroid;
+CModel			gModelAsteroid;
 glm::mat4		gMat4Asteroid(1.f);
 btRigidBody*	gCollisionAsteroid = NULL;
 

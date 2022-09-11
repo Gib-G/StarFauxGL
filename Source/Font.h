@@ -2,7 +2,7 @@
 #include "Types.h"
 #include "Shader.h"
 
-class Font
+class CFont
 {
 	private:
 		GLuint	m_TexId;
@@ -12,12 +12,12 @@ class Font
 		int		m_Height;
 		int		m_CharWidth;
 		int		m_CharHeight;
-		Shader	m_shader;
+		CShader	m_shader;
 		float	m_Coords[16*16*6*5];
 
 	public:
-		 Font();
-		~Font();
+		 CFont();
+		~CFont();
 
 		bool Load(const string& filename);
 		void Draw(const char* text, int x, int y, float size);

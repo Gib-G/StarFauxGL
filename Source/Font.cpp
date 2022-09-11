@@ -11,7 +11,7 @@ static const float caractere[] =
 	1,0,0, 1,0
 };
 
-Font::Font()
+CFont::CFont()
 {
 	m_TexId		 = (GLuint)-1;
 	m_VAO		 = (GLuint)-1;
@@ -22,12 +22,12 @@ Font::Font()
 	m_CharHeight = 0;
 }
 
-Font::~Font()
+CFont::~CFont()
 {
 	// todo
 }
 
-bool Font::Load(const string& filename)
+bool CFont::Load(const string& filename)
 {
 	CImage img;
 	if (img.Load(filename) == false)
@@ -117,7 +117,7 @@ bool Font::Load(const string& filename)
 	return true;
 }
 
-void Font::Draw(const char* text, int x, int y, float size)
+void CFont::Draw(const char* text, int x, int y, float size)
 {
 	glBindVertexArray(m_VAO);
 

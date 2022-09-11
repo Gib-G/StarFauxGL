@@ -1,16 +1,16 @@
 #include "Physics.h"
 #include "Model.h"
 
-Physics::Physics()
+CPhysics::CPhysics()
 {
 	InitData();
 }
 
-Physics::~Physics()
+CPhysics::~CPhysics()
 {
 }
 
-void Physics::InitData()
+void CPhysics::InitData()
 {
 	m_pCollisionConfiguration	= NULL;
 	m_pCollisionDispatcher		= NULL;
@@ -21,20 +21,20 @@ void Physics::InitData()
 	m_btObjects.clear();
 }
 
-btTransform Physics::glmMat4TobtTransform(const glm::mat4& transform)
+btTransform CPhysics::glmMat4TobtTransform(const glm::mat4& transform)
 {
 	glm::mat3 m3(transform);
 	return btTransform(btMatrix3x3(m3[0][0],m3[1][0],m3[2][0],m3[0][1],m3[1][1],m3[2][1],m3[0][2],m3[1][2],m3[2][2]), btVector3(transform[3][0], transform[3][1], transform[3][2]));
 }
 
-glm::mat4 Physics::btTransformToGlmMat4(const btTransform& transform)
+glm::mat4 CPhysics::btTransformToGlmMat4(const btTransform& transform)
 {
 	glm::mat4 glmMat4;
 	transform.getOpenGLMatrix(glm::value_ptr(glmMat4));
 	return glmMat4;
 }
 
-void Physics::Initialize()
+void CPhysics::Initialize()
 {
 	int bulletLibVersion = btGetVersion();
 	ConsoleWriteOk("Bullet (physic library) :");
@@ -49,7 +49,7 @@ void Physics::Initialize()
 	m_pDynamicsWorld->setGravity(btVector3(0,-90,0));
 }
 
-void Physics::Terminate()
+void CPhysics::Terminate()
 {
 	for (auto obj : m_btObjects)
 	{
@@ -73,7 +73,7 @@ void Physics::Terminate()
 	InitData();
 }
 
-btRigidBody* Physics::AddDynamicObjetToPhysic(btCollisionShape* pShape, glm::mat4 transform, glm::vec3 inertia, float mass, float friction)
+btRigidBody* CPhysics::AddDynamicObjetToPhysic(btCollisionShape* pShape, glm::mat4 transform, glm::vec3 inertia, float mass, float friction)
 {
 	// Ajoute l'inertie
 	btVector3 localInertia(inertia.x,inertia.y,inertia.z);
@@ -94,7 +94,7 @@ btRigidBody* Physics::AddDynamicObjetToPhysic(btCollisionShape* pShape, glm::mat
 	return pRigidBody;
 }
 
-btRigidBody* Physics::AddStaticObjetToPhysic(btCollisionShape* pShape, glm::mat4 transform)
+btRigidBody* CPhysics::AddStaticObjetToPhysic(btCollisionShape* pShape, glm::mat4 transform)
 {
 	// Calcule les matrices bullet
 	btTransform btTrans = glmMat4TobtTransform(transform);
@@ -112,21 +112,21 @@ btRigidBody* Physics::AddStaticObjetToPhysic(btCollisionShape* pShape, glm::mat4
 }
 
 // Ajoute un objet dynamique (sphere)
-btRigidBody* Physics::AddDynamicSphereToPhysic(float radius, glm::mat4 transform, glm::vec3 inertia, float mass, float friction)
+btRigidBody* CPhysics::AddDynamicSphereToPhysic(float radius, glm::mat4 transform, glm::vec3 inertia, float mass, float friction)
 {
 	btSphereShape* pShape = new btSphereShape(radius);
 	return AddDynamicObjetToPhysic(pShape, transform, inertia, mass, friction);
 }
 
 // Ajoute un objet dynamique (enveloppe convexe, c'est une approximation)
-btRigidBody* Physics::AddDynamicConvexHullToPhysic(const Model* pModel, glm::mat4 transform, glm::vec3 inertia, float mass, float friction)
+btRigidBody* CPhysics::AddDynamicConvexHullToPhysic(const CModel* pModel, glm::mat4 transform, glm::vec3 inertia, float mass, float friction)
 {
 	btConvexHullShape* pShape = new btConvexHullShape();
 
-	const vector<Mesh>& meshs = pModel->getMeshs();
+	const vector<CMesh>& meshs = pModel->getMeshs();
 	for (size_t i=0; i<meshs.size(); i++)
 	{
-		const vector<Vertex>& vertices = meshs[i].m_vertices;
+		const vector<SVertex>& vertices = meshs[i].m_vertices;
 		for (size_t j=0; j<vertices.size(); j++)
 		{
 			pShape->addPoint(btVector3(vertices[j].Position.x, vertices[j].Position.y, vertices[j].Position.z));
@@ -136,14 +136,14 @@ btRigidBody* Physics::AddDynamicConvexHullToPhysic(const Model* pModel, glm::mat
 }
 
 // Ajoute un objet fixe (peut être concave ou non)
-btRigidBody* Physics::AddStaticConcaveObjetToPhysic(const Model* pModel, glm::mat4 transform)
+btRigidBody* CPhysics::AddStaticConcaveObjetToPhysic(const CModel* pModel, glm::mat4 transform)
 {
 	btTriangleMesh* pTriangleMesh = new btTriangleMesh();
 
-	const vector<Mesh>& meshs = pModel->getMeshs();
+	const vector<CMesh>& meshs = pModel->getMeshs();
 	for (size_t i=0; i<meshs.size(); i++)
 	{
-		const vector<Vertex>& vertices = meshs[i].m_vertices;
+		const vector<SVertex>& vertices = meshs[i].m_vertices;
 		const vector<GLuint>& indices  = meshs[i].m_indices;
 		for (size_t j=0; j<indices.size(); )
 		{
@@ -160,13 +160,13 @@ btRigidBody* Physics::AddStaticConcaveObjetToPhysic(const Model* pModel, glm::ma
 }
 
 // Ajoute un objet fixe (plan infini)
-btRigidBody* Physics::AddStaticPlaneObjetToPhysic()
+btRigidBody* CPhysics::AddStaticPlaneObjetToPhysic()
 {
 	btStaticPlaneShape* pStaticPlane = new btStaticPlaneShape(btVector3(0,1,0), 0.0f);	// vecteur normal + constante du plan
 	return AddStaticObjetToPhysic(pStaticPlane, glm::mat4(1));
 }
 
-void Physics::RemoveObject(btRigidBody* pBody)
+void CPhysics::RemoveObject(btRigidBody* pBody)
 {
 	auto				obj    = m_btObjects.find(pBody);
 	btCollisionShape*	pShape = obj->second.second;
@@ -181,12 +181,12 @@ void Physics::RemoveObject(btRigidBody* pBody)
 	m_btObjects.erase(pBody);
 }
 
-glm::mat4 Physics::GetObjectUpdatedMatrix(btRigidBody* pBody)
+glm::mat4 CPhysics::GetObjectUpdatedMatrix(btRigidBody* pBody)
 {
 	return m_btObjects[pBody].first;
 }
 
-void Physics::SetObjectMatrix(btRigidBody* pBody, const glm::mat4& mat)
+void CPhysics::SetObjectMatrix(btRigidBody* pBody, const glm::mat4& mat)
 {
 	m_btObjects[pBody].first = mat;
 
@@ -198,7 +198,7 @@ void Physics::SetObjectMatrix(btRigidBody* pBody, const glm::mat4& mat)
 	}
 }
 
-void Physics::UpdatePhysics(float deltaTimeInSecond)
+void CPhysics::UpdatePhysics(float deltaTimeInSecond)
 {
 	m_pDynamicsWorld->stepSimulation(deltaTimeInSecond,2);	// paramètres : delta de temps et maximum number of sub-step
 	//m_pDynamicsWorld->getDebugDrawer()->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
@@ -222,7 +222,7 @@ void Physics::UpdatePhysics(float deltaTimeInSecond)
 	}
 }
 
-void Physics::SetVelocity(btRigidBody* pBody, glm::vec3 direction)
+void CPhysics::SetVelocity(btRigidBody* pBody, glm::vec3 direction)
 {
 	pBody->setLinearVelocity(btVector3(direction.x,direction.y,direction.z));
 }

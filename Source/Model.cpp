@@ -5,10 +5,10 @@
 #include "Texture.h"
 #include "StringUtil.h"
 
-Model::Model()
+CModel::CModel()
 {}
 
-void Model::Draw(glm::vec3 const& camPos, const glm::mat4& model, const glm::mat4& view, const glm::mat4& proj, const glm::vec3& lightPos, const glm::vec3& lightColor, bool bForceAmbient/*=false*/)
+void CModel::Draw(glm::vec3 const& camPos, const glm::mat4& model, const glm::mat4& view, const glm::mat4& proj, const glm::vec3& lightPos, const glm::vec3& lightColor, bool bForceAmbient/*=false*/)
 {
 	for (auto& m : m_meshes)
 	{
@@ -16,7 +16,7 @@ void Model::Draw(glm::vec3 const& camPos, const glm::mat4& model, const glm::mat
 	}
 }
 
-bool Model::Load(const string& path)
+bool CModel::Load(const string& path)
 {
 	string const curratedPath = stringReplaceAllTokens(path, "\\", "/");
 	Assimp::Importer importer;
@@ -24,7 +24,7 @@ bool Model::Load(const string& path)
 
 	if (!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
-		ConsoleWriteErr("Model::loadModel(%s) : failed to load. %s", path.c_str(), importer.GetErrorString());
+		ConsoleWriteErr("CModel::loadModel(%s) : failed to load. %s", path.c_str(), importer.GetErrorString());
 		return false;
 	}
 	m_directory = curratedPath.substr(0, curratedPath.find_last_of('/'));
@@ -50,7 +50,7 @@ bool Model::Load(const string& path)
 	return true;
 }
 
-void Model::processNodes(const aiNode* node, const aiScene* scene)
+void CModel::processNodes(const aiNode* node, const aiScene* scene)
 {
 	for (GLuint i=0; i<node->mNumMeshes; ++i)
 	{
@@ -63,11 +63,11 @@ void Model::processNodes(const aiNode* node, const aiScene* scene)
 	}
 }
 
-void Model::processMesh(const aiMesh* mesh, const aiScene* scene)
+void CModel::processMesh(const aiMesh* mesh, const aiScene* scene)
 {
-	vector<Vertex>	vertices;
+	vector<SVertex>	vertices;
 	vector<GLuint>	indices;
-	vector<Texture>	textures;
+	vector<CTexture>	textures;
 
 	bool bHasNormals	= (mesh->mNormals != NULL);
 	bool bHasTexCoords	= (mesh->HasTextureCoords(0));
@@ -76,7 +76,7 @@ void Model::processMesh(const aiMesh* mesh, const aiScene* scene)
 	// Vertices
 	for (GLuint i=0; i<mesh->mNumVertices; ++i)
 	{
-		Vertex vertex;
+		SVertex vertex;
 		vertex.Position.x = mesh->mVertices[i].x;
 		vertex.Position.y = mesh->mVertices[i].y;
 		vertex.Position.z = mesh->mVertices[i].z;
@@ -137,13 +137,13 @@ void Model::processMesh(const aiMesh* mesh, const aiScene* scene)
 	// Materials
 	aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
-	vector<Texture> ambientMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_ambient");
+	vector<CTexture> ambientMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_ambient");
 	textures.insert(textures.end(), ambientMaps.begin(), ambientMaps.end());
 
-	vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+	vector<CTexture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
 	textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
-	vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+	vector<CTexture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
 	textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
 	bool bHasAmbientTex  = !ambientMaps.empty();
@@ -170,16 +170,16 @@ void Model::processMesh(const aiMesh* mesh, const aiScene* scene)
 		colors[3][0] = shininess;
 	}
 
-	m_meshes.push_back(Mesh(vertices, indices, textures, colors, 
+	m_meshes.push_back(CMesh(vertices, indices, textures, colors, 
 							bHasNormals, bHasTexCoords, bHasColors, 
 							bHasAmbientTex, bHasDiffuseTex, bHasSpecularTex,
 							m_ShaderColorPhong, m_ShaderColorAmbient, m_ShaderTextureDiffuse, m_ShaderTextureAmbient));
 }
 
-vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, int aiTexType, const string& type_name)
+vector<CTexture> CModel::loadMaterialTextures(aiMaterial* mat, int aiTexType, const string& type_name)
 {
 	aiTextureType type = (aiTextureType)aiTexType;
-	vector<Texture> textures;
+	vector<CTexture> textures;
 	for (GLuint i=0; i<mat->GetTextureCount(type); ++i)
 	{
 		aiString str;
@@ -191,7 +191,7 @@ vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, int aiTexType, cons
 			continue;
 		}
 
-		Texture texture;
+		CTexture texture;
 		texture.Load(m_directory + '/' + str.C_Str(), GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T);
 		texture.m_type = type_name;
 		textures.push_back(texture);
@@ -200,7 +200,7 @@ vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, int aiTexType, cons
 	return textures;
 }
 
-const vector<Mesh>& Model::getMeshs() const
+const vector<CMesh>& CModel::getMeshs() const
 {
 	return m_meshes;
 }
