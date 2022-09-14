@@ -9,15 +9,15 @@
 class CWorld
 {
 public:
-	CWorld(float const AspectRatio);
+	CWorld(GLFWwindow* const Window);
 
 	// Dt = dynamic game delta time.
 	void Update(float const Dt);
 	void Render();
 
-	void SpawnAsteroid();
+	void HandleKeyboardInputs(int Key, int Scancode, int Action, int Mods);
 
-	CArwing Arwing = CArwing(this);
+	void SpawnAsteroid();
 
 private:
 	// Used to scale the skybox (SpaceBox, 1 * 1 * 1 m cube).
@@ -29,6 +29,7 @@ private:
 	float const AsteroidDespawnDistance = 1500.f;
 	float const LaserDespawnDistance = 1500.f;
 
+	CArwing Arwing = CArwing(this);
 	CModel ArwingModel;
 	CModel AsteroidModel;
 	CModel LaserModel;
@@ -45,6 +46,7 @@ private:
 	float TimeAccumulator = 0.f;
 
 	// Rendering stuff.
+	GLFWwindow* const Window = nullptr;
 	glm::mat4 ProjectionMatrix;
 	CCamera<20> Camera = CCamera<20>(CCameraTarget(), 0.f, 1.f);
 	glm::vec3 const LightPosition = glm::vec3(0.f, 1000.f, 0.f);

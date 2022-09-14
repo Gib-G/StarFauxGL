@@ -10,7 +10,7 @@ CArwing::CArwing(CWorld* const World, CModel* const Model) : CParent(World, EEnt
 	assert(Mass >= 0.f);
 	assert(LinearAcceleration >= 0.f);
 	assert(LinearDamping >= 0.f);
-	assert(LinearDecceleration >= 0.f);
+	assert(LinearDeceleration >= 0.f);
 	assert(MinLinearVelocity >= 0.f);
 	assert(MinLinearVelocity <= LinearVelocity && LinearVelocity <= MaxLinearVelocity);
 
@@ -56,6 +56,14 @@ void CArwing::InitializeRigidBody(rp3d::PhysicsCommon& PhysicsCommon, rp3d::Phys
 // The Dt to pass here is the fixed one used for the physics simulation.
 void CArwing::Update(float const Dt)
 {
+	// Responding to keyboard inputs.
+	if (ShouldAccelerate) Accelerate(Dt);
+	if (ShouldDecelerate) Decelerate(Dt);
+	if (ShouldGoUp) GoUp(Dt);
+	if (ShouldGoDown) GoDown(Dt);
+	if (ShouldTurnLeft) TurnLeft(Dt);
+	if (ShouldTurnRight) TurnRight(Dt);
+
 	glm::vec3 const& localForwardAxis = GetLocalForwardAxis();
 	
 	// ANGULAR MOTION.
@@ -99,9 +107,9 @@ void CArwing::Accelerate(float const Dt)
 	LinearVelocity = std::clamp(LinearVelocity + LinearAcceleration * Dt, MinLinearVelocity, MaxLinearVelocity);
 }
 
-void CArwing::Deccelerate(float const Dt)
+void CArwing::Decelerate(float const Dt)
 {
-	LinearVelocity = std::clamp(LinearVelocity - LinearDecceleration * Dt, MinLinearVelocity, MaxLinearVelocity);
+	LinearVelocity = std::clamp(LinearVelocity - LinearDeceleration * Dt, MinLinearVelocity, MaxLinearVelocity);
 }
 
 void CArwing::TurnLeft(float const Dt)
