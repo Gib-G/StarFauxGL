@@ -39,7 +39,6 @@ private:
 	rp3d::Transform PreviousTransform = rp3d::Transform::identity();
 
 	float NormalizingScalingFactor = 1.f;
-	void ResetScale(); // Normalizes the model matrix's orientation vectors.
 
 protected:
 	int Hp = 500;
@@ -52,6 +51,8 @@ protected:
 	float Size = 1.f; // In m.
 
 	bool DrawTextures = true;
+
+	void ResetScale(); // Normalizes the model matrix's orientation vectors.
 };
 
 class CAsteroid : public CEntity

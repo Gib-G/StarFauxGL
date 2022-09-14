@@ -30,7 +30,6 @@ public:
 	virtual void Update(float const Dt) override;
 
 	// Normalized local vectors expressed in the world frame.
-	// Fetchs them from the model matrix, not the transform of the rigid body.
 	glm::vec3 GetForwardAxis() const;
 	glm::vec3 GetUpAxis() const;
 	glm::vec3 GetRightAxis() const;
@@ -40,18 +39,26 @@ public:
 	CCameraTarget GetCameraTarget() const;
 
 private:
+	// The motion of the Arwing is not handled by the physics engine: the Arwing has a kinematic rigid body.
 	// Linear motion params (in SI units, absolute values).
-	float const Mass = 850.f;
-	float const LinearAcceleration = 0.f;
+	float const LinearAcceleration = 100.f;
 	float const LinearDamping = 5.f;
 	float const LinearDecceleration = 30.f;
-	float const MaxLinearSpeed = 400.f;
-	float const MinLinearSpeed = 0.f;
+	float const MaxLinearVelocity = 400.f;
+	float const MinLinearVelocity = 40.f;
+	float LinearVelocity = 40.f;
+	float const Mass = 850.f;
 
-	// Angular motion params per local axis (absolute values). Order: see EAxis and EDirection.
-	// Units : rad/s or rad/s^2.
-	float const AngularAccelerations[Dim] = { 11.f, 11.f, 13.f };
-	float const AngularDampings[Dim] = { 6.f, 6.f, 7.f };
-	float const MaxAngularSpeeds[Dim] = { 1.2f, 1.2f, 1.5f };
-	float const MinAngularSpeeds[Dim] = { 0.f, 0.f, 0.f };
+	// Angular motion params per local axis (absolute values).
+	// Units : deg/s or deg/s^2.
+	float const AngularAccelerations[Dim] = { 270.f, 270.f, 270.f };
+	float const AngularDampings[Dim] = { 120.f, 120.f, 120.f };
+	float const MaxAngularVelocities[Dim] = { 70.f, 70.f, 70.f };
+	float const MinAngularVelocities[Dim] = { 0.f, 0.f, 0.f };
+	float AngularVelocities[Dim] = { 0.f, 0.f, 0.f };
+
+	// Normalized local vectors expressed in the Arwing frame.
+	glm::vec3 constexpr GetLocalForwardAxis() const;
+	glm::vec3 constexpr GetLocalUpAxis() const;
+	glm::vec3 constexpr GetLocalRightAxis() const;
 };
