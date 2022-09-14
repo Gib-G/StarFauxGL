@@ -215,9 +215,6 @@ GLFWwindow* InitializeEverything()
 	// Setup Bullet
 	//gPhysics.Initialize();
 
-	// Set OpenGL viewport
-	glViewport(0, 0, gDefaultWindowWidth, gDefaultWindowHeight);
-
 	return pWindow;
 }
 
@@ -239,6 +236,10 @@ int main()
 	// ===================================================
 	// Setup de la vue OpenGL
 	// ===================================================
+	// Set OpenGL viewport
+	int width, height;
+	glfwGetFramebufferSize(pWindow, &width, &height);
+	glViewport(0, 0, width, height);
 
 	// Enable Z-buffer
 	glEnable(GL_DEPTH_TEST);
