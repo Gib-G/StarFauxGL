@@ -116,48 +116,48 @@ void CAsteroid::Randomize(SParams const& Params)
 
 	// Setting up the Mersenne twister.
 	uint32_t const u32Max = -1;
-	std::mt19937 mt(std::chrono::steady_clock::now().time_since_epoch().count());
+	std::mt19937 mt(unsigned int(std::chrono::steady_clock::now().time_since_epoch().count()));
 
 	// Randomizes initial position
 	ModelMatrix = glm::mat4(1.f);
 	ModelMatrix = glm::translate(ModelMatrix, Params.PlayerPosition);
 	glm::vec3 randomDirection = glm::normalize(glm::vec3
 	(
-		Lerp(-1.f, 1.f, mt() / u32Max),
-		Lerp(-1.f, 1.f, mt() / u32Max),
-		Lerp(-1.f, 1.f, mt() / u32Max)
+		Lerp(-1.f, 1.f, float(mt() / u32Max)),
+		Lerp(-1.f, 1.f, float(mt() / u32Max)),
+		Lerp(-1.f, 1.f, float(mt() / u32Max))
 	));
-	float const randomDistance = Lerp(Params.MinSpawnDistanceFromPlayer, Params.MaxSpawnDistanceFromPlayer, mt() / u32Max);
+	float const randomDistance = Lerp(Params.MinSpawnDistanceFromPlayer, Params.MaxSpawnDistanceFromPlayer, float(mt() / u32Max));
 	ModelMatrix = glm::translate(ModelMatrix, randomDistance * randomDirection);
 
 	// Randomizes initial transform.
 	glm::vec3 const randomRotationAxis =
 	{
-		Lerp(-1.f, 1.f, mt() / u32Max),
-		Lerp(-1.f, 1.f, mt() / u32Max),
-		Lerp(-1.f, 1.f, mt() / u32Max)
+		Lerp(-1.f, 1.f, float(mt() / u32Max)),
+		Lerp(-1.f, 1.f, float(mt() / u32Max)),
+		Lerp(-1.f, 1.f, float(mt() / u32Max))
 	};
-	float const randomRotationAngle = glm::radians(Lerp(0.f, 360.f, mt() / u32Max));
+	float const randomRotationAngle = glm::radians(Lerp(0.f, 360.f, float(mt() / u32Max)));
 	ModelMatrix = glm::rotate(ModelMatrix, randomRotationAngle, randomRotationAxis);
 
 	// Randomizes size.
-	Size = Lerp(Params.MinSize, Params.MaxSize, mt() / u32Max);
+	Size = Lerp(Params.MinSize, Params.MaxSize, float(mt() / u32Max));
 
 	// Randomizes velocities.
 	randomDirection = glm::normalize(glm::vec3
 	(
-		Lerp(-1.f, 1.f, mt() / u32Max),
-		Lerp(-1.f, 1.f, mt() / u32Max),
-		Lerp(-1.f, 1.f, mt() / u32Max)
+		Lerp(-1.f, 1.f, float(mt() / u32Max)),
+		Lerp(-1.f, 1.f, float(mt() / u32Max)),
+		Lerp(-1.f, 1.f, float(mt() / u32Max))
 	));
-	float const randomLinearVelocity = Lerp(Params.MinLinearVelocity, Params.MaxLinearVelocity, mt() / u32Max);
+	float const randomLinearVelocity = Lerp(Params.MinLinearVelocity, Params.MaxLinearVelocity, float(mt() / u32Max));
 	LinearVelocity = randomLinearVelocity * randomDirection;
 	randomDirection = glm::normalize(glm::vec3
 	(
-		Lerp(-1.f, 1.f, mt() / u32Max),
-		Lerp(-1.f, 1.f, mt() / u32Max),
-		Lerp(-1.f, 1.f, mt() / u32Max)
+		Lerp(-1.f, 1.f, float(mt() / u32Max)),
+		Lerp(-1.f, 1.f, float(mt() / u32Max)),
+		Lerp(-1.f, 1.f, float(mt() / u32Max))
 	));
-	float const randomAngularVelocity = Lerp(Params.MinAngularVelocity, Params.MaxAngularVelocity, mt() / u32Max);
+	float const randomAngularVelocity = Lerp(Params.MinAngularVelocity, Params.MaxAngularVelocity, float(mt() / u32Max));
 	AngularVelocity = randomAngularVelocity * randomDirection;
 }
