@@ -15,10 +15,9 @@ public:
 	void Update(float const Dt);
 	void Render();
 
-	void HandleKeyboardInputs(int Key, int Scancode, int Action, int Mods, float const Dt);
+	void HandleKeyboardInputs(int Key, int Scancode, int Action, int Mods);
 
 	void SpawnAsteroid();
-
 
 private:
 	// Used to scale the skybox (SpaceBox, 1 * 1 * 1 m cube).

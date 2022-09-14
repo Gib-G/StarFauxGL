@@ -26,41 +26,9 @@ CWorld::CWorld(GLFWwindow* const Window) : Window(Window)
 void CWorld::Update(float const Dt)
 {
 	// Regular updates.
-	Arwing.Update(PhysicsDt);
+	Arwing.Update(Dt);
 	Camera.UpdateViewMatrix(Arwing.GetCameraTarget()); // À mettre plus bas peut-être...
-	/*
-	glm::vec3 const& arwingPosition = Arwing.GetPosition();
-	for (uint16_t i = 0; i < AsteroidPool.NumberOfEntities; i++)
-	{
-		CAsteroid& asteroid = AsteroidPool.Entities[i];
-		if (asteroid.IsActive())
-		{
-			asteroid.Update(Dt);
-			// Despawn if too far.
-			if (glm::length(asteroid.GetPosition() - arwingPosition) >= AsteroidDespawnDistance) asteroid.SetActive(false);
-			if (!asteroid.IsActive())
-			{
-				AsteroidPool.FirstInactiveEntity = std::min(AsteroidPool.FirstInactiveEntity, i);
-			}
-		}
-	}
-	*/
-	/*
-	for (uint16_t i = 0; i < LasersPool.NumberOfEntities; i++)
-	{
-		CLaser& laser = LasersPool.Entities[i];
-		if (laser.IsActive())
-		{
-			laser.Update(Dt);
-			// Despawn if too far.
-			if (glm::length(laser.GetPosition() - arwingPosition) >= LaserDespawnDistance) laser.SetActive(false);
-			if (!laser.IsActive())
-			{
-				LasersPool.FirstInactiveEntity = std::min(LasersPool.FirstInactiveEntity, i);
-			}
-		}
-	}
-	*/
+	
 	// Physics update.
 	TimeAccumulator += Dt;
 	while (TimeAccumulator >= PhysicsDt)
@@ -71,21 +39,6 @@ void CWorld::Update(float const Dt)
 	float const interpolationFactor = TimeAccumulator / PhysicsDt;
 	assert(0.f <= interpolationFactor && interpolationFactor <= 1.f);
 
-	Arwing.UpdateModelMatrixFromRigidBody(interpolationFactor);
-	// Looping again to immediately apply the changes from the physics update to the game entitites.
-	// We could do something more optimal but hey...
-	/*
-	for (CAsteroid& asteroid : AsteroidPool.Entities)
-	{
-		if (asteroid.IsActive()) asteroid.UpdateModelMatrixFromRigidBody(interpolationFactor);
-	}
-	*/
-	/*
-	for (CLaser& laser : LasersPool.Entities)
-	{
-		if (laser.IsActive()) laser.UpdateModelMatrixFromRigidBody(interpolationFactor);
-	}
-	*/
 	_Time += Dt;
 	if (_Time >= AsteroidSpawnTime) { SpawnAsteroid(); _Time = 0.f; }
 }
@@ -97,29 +50,30 @@ void CWorld::Render()
 
 	SpaceBoxModel.Draw(cameraPosition, SpaceBoxModelMatrix, viewMatrix, ProjectionMatrix, LightPosition, LightColor);
 	Arwing.Draw(cameraPosition, viewMatrix, ProjectionMatrix, LightPosition, LightColor);
-	/*
-	for (CAsteroid& asteroid : AsteroidPool.Entities) asteroid.Draw(cameraPosition, viewMatrix, ProjectionMatrix, LightPosition, LightColor);
-	*/
-	/*
-	for (CLaser& laser : LasersPool.Entities)
-	{
-		if (laser.IsActive()) laser.UpdateModelMatrixFromRigidBody(interpolationFactor);
-	}
-	*/
 }
 
-void CWorld::HandleKeyboardInputs(int Key, int Scancode, int Action, int Mods, float const Dt)
+void CWorld::HandleKeyboardInputs(int Key, int Scancode, int Action, int Mods)
 {
-	if (Action == GLFW_RELEASE) return;
+	if (Key == GLFW_KEY_ESCAPE && Action == GLFW_PRESS) { glfwSetWindowShouldClose(Window, GLFW_TRUE); return; }
 
-	if (Key == GLFW_KEY_ESCAPE) { glfwSetWindowShouldClose(Window, GLFW_TRUE); return; }
-
-	if (Key == GLFW_KEY_UP) Arwing.GoUp(Dt);
-	if (Key == GLFW_KEY_DOWN) Arwing.GoDown(Dt);
-	if (Key == GLFW_KEY_RIGHT) Arwing.TurnRight(Dt);
-	if (Key == GLFW_KEY_LEFT) Arwing.TurnLeft(Dt);
-	if (Key == GLFW_KEY_Z) Arwing.Accelerate(Dt);
-	if (Key == GLFW_KEY_S) Arwing.Deccelerate(Dt);
+	if (Action == GLFW_PRESS)
+	{
+		if (Key == GLFW_KEY_Z) Arwing.ShouldAccelerate = true;
+		if (Key == GLFW_KEY_S) Arwing.ShouldDecelerate = true;
+		if (Key == GLFW_KEY_UP) Arwing.ShouldGoUp = true;
+		if (Key == GLFW_KEY_DOWN) Arwing.ShouldGoDown = true;
+		if (Key == GLFW_KEY_RIGHT) Arwing.ShouldTurnRight = true;
+		if (Key == GLFW_KEY_LEFT) Arwing.ShouldTurnLeft = true;
+	}
+	else if (Action == GLFW_RELEASE)
+	{
+		if (Key == GLFW_KEY_Z) Arwing.ShouldAccelerate = false;
+		if (Key == GLFW_KEY_S) Arwing.ShouldDecelerate = false;
+		if (Key == GLFW_KEY_UP) Arwing.ShouldGoUp = false;
+		if (Key == GLFW_KEY_DOWN) Arwing.ShouldGoDown = false;
+		if (Key == GLFW_KEY_RIGHT) Arwing.ShouldTurnRight = false;
+		if (Key == GLFW_KEY_LEFT) Arwing.ShouldTurnLeft = false;
+	}
 }
 
 void CWorld::SpawnAsteroid()

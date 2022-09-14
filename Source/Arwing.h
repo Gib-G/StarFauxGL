@@ -16,7 +16,7 @@ public:
 	// Linear motion. These only change the linear velocity. Motion is only applied when CArwing::Update is called.
 	// Dt = fixed physics simulation time step.
 	void Accelerate(float const Dt);
-	void Deccelerate(float const Dt);
+	void Decelerate(float const Dt);
 
 	// !! CLAMPING DONE IN UPDATE !!
 	// Angular motion. These only change the angular velocities. Motion is only applied when CArwing::Update is called.
@@ -38,12 +38,20 @@ public:
 	// manipulated by the CCamera class.
 	CCameraTarget GetCameraTarget() const;
 
+	// For controling the Arwing from CWorld.
+	bool ShouldGoUp = false;
+	bool ShouldGoDown = false;
+	bool ShouldTurnLeft = false;
+	bool ShouldTurnRight = false;
+	bool ShouldAccelerate = false;
+	bool ShouldDecelerate = false;
+
 private:
 	// The motion of the Arwing is not handled by the physics engine: the Arwing has a kinematic rigid body.
 	// Linear motion params (in SI units, absolute values).
 	float const LinearAcceleration = 100.f;
 	float const LinearDamping = 5.f;
-	float const LinearDecceleration = 30.f;
+	float const LinearDeceleration = 30.f;
 	float const MaxLinearVelocity = 400.f;
 	float const MinLinearVelocity = 40.f;
 	float LinearVelocity = 40.f;

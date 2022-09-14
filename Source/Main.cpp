@@ -224,15 +224,13 @@ int main()
 	glDisable(GL_CULL_FACE);
 
 	CWorld World(pWindow);
-	struct SData { CWorld* World = nullptr; float Dt = 0.f; } data{&World, 0.f};
-	glfwSetWindowUserPointer(pWindow, &data);
+	glfwSetWindowUserPointer(pWindow, &World);
 	glfwSetKeyCallback
 	(
 		pWindow,
 		[](GLFWwindow* Window, int Key, int Scancode, int Action, int Mods)
 		{
-			SData const data = *(SData*)glfwGetWindowUserPointer(Window);
-			data.World->HandleKeyboardInputs(Key, Scancode, Action, Mods, data.Dt);
+			((CWorld*)glfwGetWindowUserPointer(Window))->HandleKeyboardInputs(Key, Scancode, Action, Mods);
 		}
 	);
 
@@ -247,7 +245,6 @@ int main()
 		// In s.
 		float const currentTime  = float(glfwGetTime());
 		float const Dt = currentTime - previousTime;
-		data.Dt = Dt;
 		previousTime = currentTime;
 		
 		// Update the game world.
