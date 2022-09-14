@@ -15,19 +15,16 @@
 
 // exemple	: https://github.com/zhihui-xie/CG_OpenGL
 
-
 #include "Types.h"
 #include "FileUtil.h"
 #include "CImage.h"
 #include "Model.h"
 #include "Font.h"
 #include "Physics.h"
-#include "Camera.h"
-#include "Arwing.h"
+#include "World.h"
 #include <reactphysics3d/reactphysics3d.h>
 
 // Global variables
-float constexpr gWorldRadius = 2.e5f;
 bool	gKeyboardStates[GLFW_KEY_LAST+1];	// Keys states
 bool	gMouseRightPressed;					// Mouse button state
 bool	gMouseMiddlePressed;				// Mouse button state
@@ -37,27 +34,8 @@ float	gMousePositionY;					// Mouse position (relative to the start position)
 float	gMouseRelativeX;					// Mouse relative movement
 float	gMouseRelativeY;					// Mouse relative movement
 
-rp3d::PhysicsCommon gPhysics;
-rp3d::PhysicsWorld* gWorld;
-
-//Physics		gPhysics;
-CModel		gModelSky;
-glm::mat4	gMat4Sky;
-
-CModel			gModelCube;
-glm::mat4		gMat4Cube1(1.f);
-rp3d::RigidBody* gCube1RigidBody = nullptr;
-glm::mat4		gMat4Cube2(1.f);
-rp3d::RigidBody* gCube2RigidBody = nullptr;
-
-CModel			gModelAsteroid;
-glm::mat4		gMat4Asteroid(1.f);
-btRigidBody*	gCollisionAsteroid = NULL;
-
-glm::mat4		gProj = glm::perspective(45.f, 1.3f, 1.f, 350000.f);
-
-CArwing gArwing;
-CCamera<30> gCamera(gArwing.GetCameraTarget(), 0.f, 1.f);
+CModel gCube;
+glm::mat4 gMat4Cube(1.f);
 
 void callback_error(int error, const char* description)
 {
@@ -158,55 +136,23 @@ void InitializeOpenGLView(GLFWwindow* pWindow)
 }
 
 // dt in seconds
-void UpdateGameLogic(float dt)
+void UpdateGameLogic(CWorld& World, float dt)
 {
-	if (gKeyboardStates[GLFW_KEY_UP]) gArwing.GoUp(dt);
-	if (gKeyboardStates[GLFW_KEY_DOWN]) gArwing.GoDown(dt);
-	if (gKeyboardStates[GLFW_KEY_RIGHT]) gArwing.TurnRight(dt);
-	if (gKeyboardStates[GLFW_KEY_LEFT]) gArwing.TurnLeft(dt);
-	if (gKeyboardStates[GLFW_KEY_SPACE]) { gArwing.Accelerate(dt); gCamera.ChaseTarget(); }
+	dt = 1.f / 60.f;
+	if (gKeyboardStates[GLFW_KEY_UP]) World.Arwing.GoUp(dt);
+	if (gKeyboardStates[GLFW_KEY_DOWN]) World.Arwing.GoDown(dt);
+	if (gKeyboardStates[GLFW_KEY_RIGHT]) World.Arwing.TurnRight(dt);
+	if (gKeyboardStates[GLFW_KEY_LEFT]) World.Arwing.TurnLeft(dt);
+	if (gKeyboardStates[GLFW_KEY_SPACE]) World.Arwing.Accelerate(dt);
 
-	gArwing.Move(dt);
+	World.Update(dt);
 
-	gCamera.UpdateViewMatrix(gArwing.GetCameraTarget(), dt);
+	glClearColor(0.2f, 0.2f, 0.4f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	World.Render();
 
 	//gCollisionArwing->getMotionState()->setWorldTransform(gPhysics.glmMat4TobtTransform(gMat4Arwing));
 	// gPhysics.UpdatePhysics(dt);
-	gWorld->update(1.f / 60.f);
-	gCube1RigidBody->getTransform().getOpenGLMatrix(reinterpret_cast<rp3d::decimal*>(&gMat4Cube1));
-	gCube2RigidBody->getTransform().getOpenGLMatrix(reinterpret_cast<rp3d::decimal*>(&gMat4Cube2));
-}
-
-void DrawGame(float truc)
-{
-	glClearColor(0.2f, 0.2f, 0.4f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	// MVP
-	glm::mat4 model		= glm::mat4(1.0);
-	glm::mat4 view		= gCamera.GetViewMatrix();
-	glm::mat4 proj		= gProj;
-
-	glm::vec3 cameraPosition = gCamera.GetPosition();
-
-	// Light sources
-	glm::vec3 lightPos	= glm::vec3(0.f, 1000.f, 0.f);
-	glm::vec3 lightColor= glm::vec3(1.f, 1.f, 1.f);
-
-	// Skybox
-	gModelSky.Draw(cameraPosition, gMat4Sky, view, gProj, lightPos, lightColor);
-	
-	// Arwing
-	gArwing.Draw(cameraPosition, view, gProj, lightPos, lightColor);
-	
-	// Cube
-	gModelCube.Draw(cameraPosition, gMat4Cube1, view, gProj, lightPos, lightColor, true);
-	gModelCube.Draw(cameraPosition, gMat4Cube2, view, gProj, lightPos, lightColor, true);
-	
-	// Asteroid
-	gModelAsteroid.Draw(cameraPosition, gMat4Asteroid, view, gProj, lightPos, lightColor);
-
-	// gFont.Draw("plop !",20,20,30.0f);
 }
 
 GLFWwindow* InitializeEverything()
@@ -270,46 +216,6 @@ int main()
 	{
 		return -1;
 	}
-
-	// ===================================================
-	// Load images/3d objects/shaders before the main loop
-	// ===================================================
-
-	if (gModelSky.Load(ROOT_DIR"Resources\\Meshes\\SpaceBox\\space.obj") == false)
-	{
-		ConsoleWriteErr("Failed to load 3D object");
-	}
-	gArwing.LoadModel();
-	if (gModelAsteroid.Load(ROOT_DIR"Resources\\Meshes\\Asteroid\\asteroid.obj") == false)
-	{
-		ConsoleWriteErr("Failed to load 3D object");
-	}
-	if (gModelCube.Load(ROOT_DIR"Resources\\Meshes\\Cube\\cube.obj") == false)
-	{
-		ConsoleWriteErr("Failed to load 3D object");
-	}
-	// Physics world.
-	gWorld = gPhysics.createPhysicsWorld();
-
-	gMat4Sky = glm::mat4(1.f);
-	gMat4Sky = glm::scale(gMat4Sky, glm::vec3(2.e5f, 2.e5f, 2.e5f));
-
-	//gMat4Cube1 = glm::translate(gMat4Cube1, glm::vec3(0.f, 0.f, -10.f));
-	gMat4Cube2 = glm::translate(gMat4Cube2, glm::vec3(0.2f, 10.f, -10.f));
-	rp3d::Transform cubeTransform;
-	cubeTransform.setFromOpenGL(reinterpret_cast<rp3d::decimal*>(&gMat4Cube1));
-	gCube1RigidBody = gWorld->createRigidBody(cubeTransform);
-	cubeTransform.setFromOpenGL(reinterpret_cast<rp3d::decimal*>(&gMat4Cube2));
-	gCube2RigidBody = gWorld->createRigidBody(cubeTransform);
-	const rp3d::Vector3 halfExtents(0.5f, 0.5f, 0.5f);
-	rp3d::BoxShape* boxShape = gPhysics.createBoxShape(halfExtents);
-	gCube1RigidBody->addCollider(boxShape, rp3d::Transform::identity());
-	gCube2RigidBody->addCollider(boxShape, rp3d::Transform::identity());
-	gCube1RigidBody->enableGravity(false);
-
-	gMat4Asteroid = glm::translate(gMat4Asteroid, glm::vec3(0.f, 0.f, -7.f));
-	gMat4Asteroid = glm::scale(gMat4Asteroid, glm::vec3(0.007f, 0.007f, 0.007f));
-
 	//	if (gFont.Load("images/ascii-font.png") == false)
 	//	{
 	//		ConsoleWriteErr("Failed to load font image");
@@ -329,6 +235,10 @@ int main()
 	// Disable back face culling
 	glDisable(GL_CULL_FACE);
 
+	CWorld World;
+	gCube.Load(ROOT_DIR"Resources\\Meshes\\Cube\\cube.obj");
+	gMat4Cube = glm::scale(gMat4Cube, glm::vec3(2.e5f, 2.e5f, 2.e5f));
+
 	// Loop until the user closes the window
 	float lastTimeInSecond = (float)glfwGetTime();
 	while (!glfwWindowShouldClose(pWindow))
@@ -337,11 +247,9 @@ int main()
 		float currTimeInSecond  = (float)glfwGetTime();
 		float deltaTimeInSecond = currTimeInSecond - lastTimeInSecond;		// Duration of the last frame, useful to update the game physic.
 		lastTimeInSecond = currTimeInSecond;
-		UpdateGameLogic(deltaTimeInSecond);
+		UpdateGameLogic(World, deltaTimeInSecond);
 
-		// Render here
-		DrawGame(fabs(sin(lastTimeInSecond*2)));
-
+		//gCube.Draw(World.Camera.GetPosition(), gMat4Cube, World.Camera.GetViewMatrix(), World.ProjectionMatrix, World.LightPosition, World.LightColor, true);
 		// Swap front and back buffers
 		glfwSwapBuffers(pWindow);
 

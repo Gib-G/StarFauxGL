@@ -1,6 +1,8 @@
 #include "Mesh.h"
 
-CMesh::CMesh(	const vector<SVertex>& vertices,
+CMesh::CMesh
+(
+			const vector<SVertex>& vertices,
 			const vector<GLuint>& indices,
 			const vector<CTexture>& textures,
 			const glm::mat4& matColors,
@@ -9,7 +11,8 @@ CMesh::CMesh(	const vector<SVertex>& vertices,
 			const CShader& shaderColorPhong,
 			const CShader& shaderColorAmbient,
 			const CShader& shaderTextureDiffuse,
-			const CShader& shaderTextureAmbient	)
+			const CShader& shaderTextureAmbient
+)
 	: m_vertices(vertices)
 	, m_indices(indices)
 	, m_textures(textures)

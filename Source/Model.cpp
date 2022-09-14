@@ -4,9 +4,23 @@
 #include "Model.h"
 #include "Texture.h"
 #include "StringUtil.h"
+#include <reactphysics3d/reactphysics3d.h>
 
-CModel::CModel()
-{}
+rp3d::Vector3 SAABB::GetLength() const
+{
+	assert(XMin <= XMax && YMin <= YMax && ZMin <= ZMax);
+	return rp3d::Vector3(XMax - XMin, YMax - YMin, ZMax - ZMin);
+}
+
+// Computing it all the times but no one cares...
+float SAABB::GetMaxLength() const
+{
+	return GetLength().getMaxValue();
+}
+
+CModel::CModel(const string& path) { Load(path); }
+
+SAABB const& CModel::GetAABB() const { return AABB; }
 
 void CModel::Draw(glm::vec3 const& CameraPosition, glm::mat4 const& ModelMatrix, glm::mat4 const& ViewMatrix, glm::mat4 const& ProjectionMatrix, glm::vec3 const& LightPosition, glm::vec3 const& LightColor, bool const ForceAmbient)
 {
@@ -20,11 +34,12 @@ bool CModel::Load(const string& path)
 {
 	string const curratedPath = stringReplaceAllTokens(path, "\\", "/");
 	Assimp::Importer importer;
-	const aiScene*	 scene = importer.ReadFile(curratedPath, aiProcess_Triangulate | aiProcess_FlipUVs);
+	const aiScene* scene = importer.ReadFile(curratedPath, aiProcess_Triangulate | aiProcess_FlipUVs);
 
 	if (!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
 		ConsoleWriteErr("CModel::loadModel(%s) : failed to load. %s", path.c_str(), importer.GetErrorString());
+		Loaded = false;
 		return false;
 	}
 	m_directory = curratedPath.substr(0, curratedPath.find_last_of('/'));
@@ -45,8 +60,9 @@ bool CModel::Load(const string& path)
 	{
 		ConsoleWriteErr("Failed to load shader");
 	}
-
 	processNodes(scene->mRootNode, scene);
+
+	Loaded = true;
 	return true;
 }
 
@@ -77,9 +93,13 @@ void CModel::processMesh(const aiMesh* mesh, const aiScene* scene)
 	for (GLuint i=0; i<mesh->mNumVertices; ++i)
 	{
 		SVertex vertex;
-		vertex.Position.x = mesh->mVertices[i].x;
-		vertex.Position.y = mesh->mVertices[i].y;
-		vertex.Position.z = mesh->mVertices[i].z;
+		float const x = mesh->mVertices[i].x;
+		float const y = mesh->mVertices[i].y;
+		float const z = mesh->mVertices[i].z;
+		vertex.Position.x = x; vertex.Position.y = y; vertex.Position.z = z;
+		AABB.XMin = std::fmin(AABB.XMin, x); AABB.XMax = std::fmax(AABB.XMax, x);
+		AABB.YMin = std::fmin(AABB.YMin, y); AABB.YMax = std::fmax(AABB.YMax, y);
+		AABB.ZMin = std::fmin(AABB.ZMin, z); AABB.ZMax = std::fmax(AABB.ZMax, z);
 
 		if (bHasNormals)
 		{
@@ -123,7 +143,6 @@ void CModel::processMesh(const aiMesh* mesh, const aiScene* scene)
 
 		vertices.push_back(vertex);
 	}
-
 	// Faces (triangles indices)
 	for (GLuint i=0; i<mesh->mNumFaces; ++i)
 	{

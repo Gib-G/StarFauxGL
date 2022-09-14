@@ -111,5 +111,11 @@
     <ClInclude Include="Source\World.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Axes.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\EntityPool.h">
+      <Filter>Source</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

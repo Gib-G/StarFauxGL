@@ -39,9 +39,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Arwing.h" />
+    <ClInclude Include="Source\Axes.h" />
     <ClInclude Include="Source\Camera.h" />
     <ClInclude Include="Source\CImage.h" />
     <ClInclude Include="Source\Entity.h" />
+    <ClInclude Include="Source\EntityPool.h" />
     <ClInclude Include="Source\FileUtil.h" />
     <ClInclude Include="Source\Font.h" />
     <ClInclude Include="Source\Mesh.h" />
