@@ -1,8 +1,11 @@
 #include "World.h"
 
-CWorld::CWorld(float const AspectRatio)
+CWorld::CWorld(GLFWwindow* const Window) : Window(Window)
 {
-	ProjectionMatrix = glm::perspective(45.f, AspectRatio, 1.f, 350000.f);
+	assert(Window);
+	int windowWidth, windowHeight;
+	glfwGetFramebufferSize(Window, &windowWidth, &windowHeight);
+	ProjectionMatrix = glm::perspective(45.f, float(windowWidth) / float(windowHeight), 1.f, 350000.f);
 
 	PhysicsWorld = PhysicsCommon.createPhysicsWorld();
 	PhysicsWorld->setIsGravityEnabled(false);
@@ -103,6 +106,20 @@ void CWorld::Render()
 		if (laser.IsActive()) laser.UpdateModelMatrixFromRigidBody(interpolationFactor);
 	}
 	*/
+}
+
+void CWorld::HandleKeyboardInputs(int Key, int Scancode, int Action, int Mods, float const Dt)
+{
+	if (Action == GLFW_RELEASE) return;
+
+	if (Key == GLFW_KEY_ESCAPE) { glfwSetWindowShouldClose(Window, GLFW_TRUE); return; }
+
+	if (Key == GLFW_KEY_UP) Arwing.GoUp(Dt);
+	if (Key == GLFW_KEY_DOWN) Arwing.GoDown(Dt);
+	if (Key == GLFW_KEY_RIGHT) Arwing.TurnRight(Dt);
+	if (Key == GLFW_KEY_LEFT) Arwing.TurnLeft(Dt);
+	if (Key == GLFW_KEY_Z) Arwing.Accelerate(Dt);
+	if (Key == GLFW_KEY_S) Arwing.Deccelerate(Dt);
 }
 
 void CWorld::SpawnAsteroid()

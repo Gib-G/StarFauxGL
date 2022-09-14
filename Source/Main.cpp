@@ -23,6 +23,7 @@
 #include "Physics.h"
 #include "World.h"
 #include <reactphysics3d/reactphysics3d.h>
+//#include <GLFW/glfw3.h>
 
 // Global variables
 bool	gKeyboardStates[GLFW_KEY_LAST+1];	// Keys states
@@ -135,31 +136,6 @@ void InitInputs(GLFWwindow* pWindow)
 	gMouseRelativeY		= 0.0f;
 }
 
-void InitializeOpenGLView(GLFWwindow* pWindow)
-{
-	
-}
-
-// dt in seconds
-void UpdateGameLogic(CWorld& World, float dt)
-{
-	dt = 1.f / 60.f;
-	if (gKeyboardStates[GLFW_KEY_UP]) World.Arwing.GoUp(dt);
-	if (gKeyboardStates[GLFW_KEY_DOWN]) World.Arwing.GoDown(dt);
-	if (gKeyboardStates[GLFW_KEY_RIGHT]) World.Arwing.TurnRight(dt);
-	if (gKeyboardStates[GLFW_KEY_LEFT]) World.Arwing.TurnLeft(dt);
-	if (gKeyboardStates[GLFW_KEY_SPACE]) World.Arwing.Accelerate(dt);
-
-	World.Update(dt);
-
-	glClearColor(0.2f, 0.2f, 0.4f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	World.Render();
-
-	//gCollisionArwing->getMotionState()->setWorldTransform(gPhysics.glmMat4TobtTransform(gMat4Arwing));
-	// gPhysics.UpdatePhysics(dt);
-}
-
 GLFWwindow* InitializeEverything()
 {
 	// Initialize GLFW
@@ -247,25 +223,42 @@ int main()
 	// Disable back face culling
 	glDisable(GL_CULL_FACE);
 
-	CWorld World(gAspectRatio);
+	CWorld World(pWindow);
+	struct SData { CWorld* World = nullptr; float Dt = 0.f; } data{&World, 0.f};
+	glfwSetWindowUserPointer(pWindow, &data);
+	glfwSetKeyCallback
+	(
+		pWindow,
+		[](GLFWwindow* Window, int Key, int Scancode, int Action, int Mods)
+		{
+			SData const data = *(SData*)glfwGetWindowUserPointer(Window);
+			data.World->HandleKeyboardInputs(Key, Scancode, Action, Mods, data.Dt);
+		}
+	);
+
 	gCube.Load(ROOT_DIR"Resources\\Meshes\\Cube\\cube.obj");
 	gMat4Cube = glm::scale(gMat4Cube, glm::vec3(2.e5f, 2.e5f, 2.e5f));
 
-	// Loop until the user closes the window
-	float lastTimeInSecond = (float)glfwGetTime();
+	// In s.
+	float previousTime = float(glfwGetTime());
+	// Game loop.
 	while (!glfwWindowShouldClose(pWindow))
 	{
-		// Update the game (logic/physic/etc...)
-		float currTimeInSecond  = (float)glfwGetTime();
-		float deltaTimeInSecond = currTimeInSecond - lastTimeInSecond;		// Duration of the last frame, useful to update the game physic.
-		lastTimeInSecond = currTimeInSecond;
-		UpdateGameLogic(World, deltaTimeInSecond);
+		// In s.
+		float const currentTime  = float(glfwGetTime());
+		float const Dt = currentTime - previousTime;
+		data.Dt = Dt;
+		previousTime = currentTime;
+		
+		// Update the game world.
+		World.Update(Dt);
 
-		//gCube.Draw(World.Camera.GetPosition(), gMat4Cube, World.Camera.GetViewMatrix(), World.ProjectionMatrix, World.LightPosition, World.LightColor, true);
-		// Swap front and back buffers
+		// Clear the screen and render the game world.
+		glClearColor(0.2f, 0.2f, 0.4f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		World.Render();
+
 		glfwSwapBuffers(pWindow);
-
-		// Poll for and process events -> Appel automatique si besoin des fonctions callback_xxx() définies plus haut.
 		glfwPollEvents();
 	}
 
