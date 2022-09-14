@@ -9,7 +9,7 @@
 class CWorld
 {
 public:
-	CWorld();
+	CWorld(float const AspectRatio);
 
 	// Dt = dynamic game delta time.
 	void Update(float const Dt);
@@ -45,7 +45,7 @@ private:
 	float TimeAccumulator = 0.f;
 
 	// Rendering stuff.
-	glm::mat4 const ProjectionMatrix = glm::perspective(45.f, 1.3f, 1.f, 350000.f);
+	glm::mat4 ProjectionMatrix;
 	CCamera<20> Camera = CCamera<20>(CCameraTarget(), 0.f, 1.f);
 	glm::vec3 const LightPosition = glm::vec3(0.f, 1000.f, 0.f);
 	glm::vec3 const LightColor = glm::vec3(1.f, 1.f, 1.f);

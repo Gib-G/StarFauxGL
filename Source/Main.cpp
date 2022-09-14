@@ -37,6 +37,11 @@ float	gMouseRelativeY;					// Mouse relative movement
 CModel gCube;
 glm::mat4 gMat4Cube(1.f);
 
+// Default window dimensions in pixels.
+int constexpr gDefaultWindowWidth = 1100;
+int constexpr gDefaultWindowHeight = 1100;
+float gAspectRatio = float(gDefaultWindowWidth / gDefaultWindowHeight);
+
 void callback_error(int error, const char* description)
 {
 	fprintf(stderr, "Error %d : %s\n", error, description);
@@ -177,14 +182,21 @@ GLFWwindow* InitializeEverything()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// Create a windowed mode window and its OpenGL context
-	GLFWwindow* pWindow = glfwCreateWindow(1300, 1000, "Hello World", NULL, NULL);
+	//GLFWmonitor* const monitor = glfwGetPrimaryMonitor();
+	//GLFWvidmode const* const videoMode = glfwGetVideoMode(monitor);
+	//int const monitorWidth = videoMode->width;
+	//int const monitorHeight = videoMode->height;
+
+	GLFWwindow* pWindow = glfwCreateWindow(gDefaultWindowWidth, gDefaultWindowHeight, "StarFaux GL", nullptr, nullptr);
 	if (pWindow == NULL)
 	{
 		glfwTerminate();
 		return NULL;
 	}
+	//gAspectRatio = float(monitorWidth / monitorHeight);
+
 	InitInputs(pWindow);
-	glfwMakeContextCurrent(pWindow);	// Make the window's context current
+	glfwMakeContextCurrent(pWindow);
 
 	glewExperimental = GL_TRUE;
 	GLenum glewErr = glewInit();
@@ -202,6 +214,9 @@ GLFWwindow* InitializeEverything()
 
 	// Setup Bullet
 	//gPhysics.Initialize();
+
+	// Set OpenGL viewport
+	glViewport(0, 0, gDefaultWindowWidth, gDefaultWindowHeight);
 
 	return pWindow;
 }
@@ -224,10 +239,6 @@ int main()
 	// ===================================================
 	// Setup de la vue OpenGL
 	// ===================================================
-	// Set OpenGL viewport
-	int width, height;
-	glfwGetFramebufferSize(pWindow, &width, &height);
-	glViewport(0, 0, width, height);
 
 	// Enable Z-buffer
 	glEnable(GL_DEPTH_TEST);
@@ -235,7 +246,7 @@ int main()
 	// Disable back face culling
 	glDisable(GL_CULL_FACE);
 
-	CWorld World;
+	CWorld World(gAspectRatio);
 	gCube.Load(ROOT_DIR"Resources\\Meshes\\Cube\\cube.obj");
 	gMat4Cube = glm::scale(gMat4Cube, glm::vec3(2.e5f, 2.e5f, 2.e5f));
 

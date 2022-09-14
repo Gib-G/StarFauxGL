@@ -1,7 +1,9 @@
 #include "World.h"
 
-CWorld::CWorld()
+CWorld::CWorld(float const AspectRatio)
 {
+	ProjectionMatrix = glm::perspective(45.f, AspectRatio, 1.f, 350000.f);
+
 	PhysicsWorld = PhysicsCommon.createPhysicsWorld();
 	PhysicsWorld->setIsGravityEnabled(false);
 
