@@ -1,5 +1,6 @@
 #include "Util.h"
 #include "Types.h"
+#include <reactphysics3d/reactphysics3d.h>
 
 CEasingFunction::CEasingFunction(float const Duration) : Duration{ Duration }, Time{ 0.f } { assert(Duration > 0.f); }
 
@@ -39,4 +40,57 @@ float CSquareWave::GetValue() const
 	int const floor = int(std::floorf(Time / SingleBlinkDuration));
 	if (floor % 2 == 0) return 1.f;
 	return 0.f;
+}
+
+CRandomizer::CRandomizer() { mt = std::mt19937(unsigned int(std::chrono::steady_clock::now().time_since_epoch().count())); }
+
+static float Lerp(float const x1, float const x2, float const dx)
+{
+	assert(0.f <= dx && dx <= 1.f);
+	return dx * x2 + (1.f - dx) * x1;
+}
+
+// Uniform distribution on [Min, Max].
+float CRandomizer::GetRandomFloat(float const Min, float const Max)
+{
+	LastRandomNumber = float(mt()) / u32Max_f;
+	return Lerp(Min, Max, LastRandomNumber);
+}
+float CRandomizer::GetSameRandomFloat(float const Min, float const Max)
+{
+	if (LastRandomNumber < 0.f)
+	{
+		std::cout << "CRandomizer::GetSameRandomFloat: Please call GetRandomFloat at least once before calling this function. Aborting.\n";
+		assert(false);
+		return -1;
+	}
+	return Lerp(Min, Max, LastRandomNumber);
+}
+
+// Returns non-zero normalized random vectors.
+void CRandomizer::GetRandomVector(glm::vec3& VectorOut)
+{
+	do
+	{
+		VectorOut = glm::vec3
+		(
+			GetRandomFloat(-1.f, 1.f),
+			GetRandomFloat(-1.f, 1.f),
+			GetRandomFloat(-1.f, 1.f)
+		);
+	} while (glm::length(VectorOut) == 0.f); // Bad luck... :/
+	VectorOut = glm::normalize(VectorOut);
+}
+void CRandomizer::GetRandomVector(rp3d::Vector3& VectorOut)
+{
+	do
+	{
+		VectorOut = rp3d::Vector3
+		(
+			GetRandomFloat(-1.f, 1.f),
+			GetRandomFloat(-1.f, 1.f),
+			GetRandomFloat(-1.f, 1.f)
+		);
+	} while (VectorOut.length() == 0.f);
+	VectorOut.normalize();
 }

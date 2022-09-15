@@ -21,6 +21,8 @@ public:
 
 	float GetInterpolationFactor() const { return InterpolationFactor; }
 
+	void InitializeRigidBody(CEntity& Entity);
+
 private:
 	// Used to scale the skybox (SpaceBox, 1 * 1 * 1 m cube).
 	float const WorldRadius = 2.e5f;
@@ -38,9 +40,8 @@ private:
 	CModel SpaceBoxModel;
 	glm::mat4 SpaceBoxModelMatrix = glm::mat4(1.f);
 
-	CAsteroid Asteroid = CAsteroid(this);
 	CEntityPool<CAsteroid, 200> AsteroidPool;
-	// SEntityPool<CLaser, 100> LaserPool;
+	// CEntityPool<CLaser, 200> LaserPool;
 
 	// Physics.
 	rp3d::PhysicsCommon PhysicsCommon;

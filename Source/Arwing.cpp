@@ -103,11 +103,6 @@ void CArwing::Update(float const Dt)
 	if (!RigidBody) return;
 	Transform transform; transform.setFromOpenGL(reinterpret_cast<decimal*>(&ModelMatrix));
 	RigidBody->setTransform(transform);
-
-	Vector3 const& p = RigidBody->getTransform().getPosition();
-	glm::vec3 const& pos = GetPosition();
-	std::cout << "Pos: " << pos.x << ";       " << pos.y << ";       " << pos.z << "\n";
-	std::cout << "RB Pos: " << p.x << ";       " << p.y << ";       " << p.z << "\n\n";
 }
 
 void CArwing::Accelerate(float const Dt)

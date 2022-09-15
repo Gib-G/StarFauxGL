@@ -20,16 +20,12 @@ CWorld::CWorld(GLFWwindow* const Window) : Window(Window)
 
 	Arwing.SetModel(&ArwingModel);
 	Arwing.InitializeRigidBody(PhysicsCommon, PhysicsWorld);
-
-	Asteroid.SetModel(&AsteroidModel);
-	Asteroid.Randomize();
-	Asteroid.Randomize();
-	Asteroid.InitializeRigidBody(PhysicsCommon, PhysicsWorld);
 	
 	CAsteroid asteroid(this, &AsteroidModel);
 	asteroid.InitializeRigidBody(PhysicsCommon, PhysicsWorld);
 	AsteroidPool.FillWith(asteroid);
-	//for (int k = 0; k < 30; k++) SpawnAsteroid();
+
+	for (int k = 0; k < 30; k++) SpawnAsteroid();
 }
 
 void CWorld::Update(float const Dt)
@@ -48,8 +44,8 @@ void CWorld::Update(float const Dt)
 	InterpolationFactor = TimeAccumulator / PhysicsDt;
 	assert(0.f <= InterpolationFactor && InterpolationFactor <= 1.f);
 
-	Asteroid.Update(Dt);
-	//AsteroidPool.UpdateAllActiveEntities(Dt);
+	//Asteroid.Update(Dt);
+	AsteroidPool.UpdateAllActiveEntities(Dt);
 
 	_Time += Dt;
 	//if (_Time >= AsteroidSpawnTime) { SpawnAsteroid(); _Time = 0.f; }
@@ -63,7 +59,8 @@ void CWorld::Render()
 	SpaceBoxModel.Draw(cameraPosition, SpaceBoxModelMatrix, viewMatrix, ProjectionMatrix, LightPosition, LightColor);
 	Arwing.Draw(cameraPosition, viewMatrix, ProjectionMatrix, LightPosition, LightColor);
 
-	Asteroid.Draw(cameraPosition, viewMatrix, ProjectionMatrix, LightPosition, LightColor);
+	//Asteroid.Draw(cameraPosition, viewMatrix, ProjectionMatrix, LightPosition, LightColor);
+	AsteroidPool.DrawAllActiveEntities(cameraPosition, viewMatrix, ProjectionMatrix, LightPosition, LightColor);
 }
 
 void CWorld::HandleKeyboardInputs(int Key, int Scancode, int Action, int Mods)
@@ -92,7 +89,16 @@ void CWorld::HandleKeyboardInputs(int Key, int Scancode, int Action, int Mods)
 
 void CWorld::SpawnAsteroid()
 {
-	//CAsteroid& asteroid = *AsteroidPool.GetInactiveEntity();
-	//asteroid.Randomize();
-	//asteroid.SetActive(true);
+	CAsteroid& asteroid = *AsteroidPool.GetInactiveEntity();
+
+	CAsteroid::SParams params;
+	params.PlayerPosition = Arwing.GetPosition();
+
+	asteroid.Randomize(params);
+	asteroid.SetActive(true);
+}
+
+void CWorld::InitializeRigidBody(CEntity& Entity)
+{
+	Entity.InitializeRigidBody(PhysicsCommon, PhysicsWorld);
 }

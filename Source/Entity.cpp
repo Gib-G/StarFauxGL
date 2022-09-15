@@ -1,7 +1,6 @@
 #include "Entity.h"
 #include "World.h"
-#include <random>
-#include <chrono> 
+#include "Util.h"
 
 CEntity::CEntity(CWorld* const World, EEntityType const Type, CModel* const Model) :
 	World(World),
@@ -78,13 +77,43 @@ void CEntity::UpdateModelMatrixFromRigidBody(float const InterpolationFactor)
 	//assert(glm::length(x) == 1.f && glm::length(y) == 1.f && glm::length(z) == 1.f);
 }
 
+CEntity& CEntity::operator=(CEntity const& Other)
+{
+	if (this == &Other) return *this;
+	if (World != Other.World)
+	{
+		assert(false);
+		std::cout << "CEntity& operator=(CEntity const&): *this and Other do not belong to the same game world (CWorld instance): Aborting copy!\n";
+		return *this;
+	}
+	if (Type != Other.Type)
+	{
+		assert(false);
+		std::cout
+			<< "CEntity& operator=(CEntity const&): *this and Other do not have the same type (EEntityType): Aborting copy!\n"
+			<< "Type of *this is: " << s_EntityNames[int(this->GetType())] << ".\n"
+			<< "Type of *this is: " << s_EntityNames[int(this->GetType())] << ".\n";
+		return *this;
+	}
+	Active = Other.Active;
+	PreviousTransform = Other.PreviousTransform;
+	NormalizingScalingFactor = Other.NormalizingScalingFactor;
+	Hp = Other.Hp;
+	Model = Other.Model;
+	ModelMatrix = Other.ModelMatrix;
+	// RigidBody = Other.RigidBody; OOOF
+	Size = Other.Size;
+	DrawTextures = Other.DrawTextures;
+
+	World->InitializeRigidBody(*this);
+
+	return *this;
+}
+
 ////////	ASTEROIDS	 //////////
 CAsteroid::CAsteroid(CWorld* const World, CModel* Model) : CEntity(World, EEntityType::Asteroid, Model)
 {
 	DrawTextures = false;
-	//ModelMatrix = glm::mat4(1.f);
-	//ModelMatrix = glm::translate(ModelMatrix, glm::vec3(0.f, 0.f, -200.f));
-	//Size = 5.f;
 	Randomize();
 }
 
@@ -99,7 +128,7 @@ void CAsteroid::InitializeRigidBody(rp3d::PhysicsCommon& PhysicsCommon, rp3d::Ph
 
 	RigidBody->setLinearDamping(0.f);
 	RigidBody->setAngularDamping(0.f);
-	RigidBody->setMass(100.f);
+	RigidBody->setMass(Mass);
 
 	RigidBody->setUserData(this);
 }
@@ -122,81 +151,48 @@ void CAsteroid::OnCollision(CEntity const& CollidedWith)
 	RigidBody->setLinearVelocity(500.f * ff);
 }
 
-static float Lerp(float const x1, float const x2, float const dx)
-{
-	assert(0.f <= dx && dx <= 1.f);
-	return dx * x2 + (1.f - dx) * x1;
-}
-
 void CAsteroid::Randomize(SParams const& Params)
 {
 	// Some checks.
 	assert(Params.MinSize > 0.f && Params.MinSize <= Params.MaxSize);
+	assert(Params.MinMass > 0.f && Params.MinMass <= Params.MaxMass);
 	assert(0.f <= Params.MinAngularVelocity && Params.MinAngularVelocity <= Params.MaxAngularVelocity);
 	assert(0.f <= Params.MinLinearVelocity && Params.MinLinearVelocity <= Params.MaxLinearVelocity);
 	assert(0.f <= Params.MinSpawnDistanceFromPlayer && Params.MinSpawnDistanceFromPlayer <= Params.MaxSpawnDistanceFromPlayer);
 
-	// Setting up the Mersenne twister.
-	double const u32Max = double(uint32_t(-1));
-	std::mt19937 mt(unsigned int(std::chrono::steady_clock::now().time_since_epoch().count()));
-	//std::mt19937 mt(std::random_device{}());
+	CRandomizer r;
 
 	// Randomizes initial position
 	ModelMatrix = glm::mat4(1.f);
 	ModelMatrix = glm::translate(ModelMatrix, Params.PlayerPosition);
-	glm::vec3 randomDirection
-	(
-		Lerp(-1.f, 1.f, double(mt()) / u32Max),
-		Lerp(-1.f, 1.f, double(mt()) / u32Max),
-		Lerp(-1.f, 1.f, double(mt()) / u32Max)
-	); float length = glm::length(randomDirection);
-	randomDirection = (length == 0.f ? glm::vec3(0.f, -1.f, 0.f) : randomDirection / length);
-	float const randomDistance = Lerp(Params.MinSpawnDistanceFromPlayer, Params.MaxSpawnDistanceFromPlayer, float(mt() / u32Max));
+
+	glm::vec3 randomDirection; r.GetRandomVector(randomDirection);
+	float const randomDistance = r.GetRandomFloat(Params.MinSpawnDistanceFromPlayer, Params.MaxSpawnDistanceFromPlayer);
 	ModelMatrix = glm::translate(ModelMatrix, randomDistance * randomDirection);
 
 	// Randomizes initial transform.
-	glm::vec3 randomRotationAxis =
-	{
-		Lerp(-1.f, 1.f, float(mt() / u32Max)),
-		Lerp(-1.f, 1.f, float(mt() / u32Max)),
-		Lerp(-1.f, 1.f, float(mt() / u32Max))
-	};
-	length = glm::length(randomRotationAxis);
-	randomRotationAxis = (length == 0.f ? glm::vec3(0.f, -1.f, 0.f) : randomRotationAxis);
-	float const randomRotationAngle = glm::radians(Lerp(0.f, 360.f, float(mt() / u32Max)));
+	glm::vec3 randomRotationAxis; r.GetRandomVector(randomRotationAxis);
+	float const randomRotationAngle = glm::radians(r.GetRandomFloat(0.f, 360.f));
 	ModelMatrix = glm::rotate(ModelMatrix, randomRotationAngle, randomRotationAxis);
 
-	// Randomizes size.
-	Size = Lerp(Params.MinSize, Params.MaxSize, float(mt() / u32Max));
-
-	using namespace rp3d;
+	// Randomizes size and mass.
+	Size = r.GetRandomFloat(Params.MinSize, Params.MaxSize);
+	Mass = r.GetSameRandomFloat(Params.MinMass, Params.MaxMass);
 
 	// Randomizes velocities.
-	LinearVelocity = Vector3
-	(
-		Lerp(-1.f, 1.f, float(mt() / u32Max)),
-		Lerp(-1.f, 1.f, float(mt() / u32Max)),
-		Lerp(-1.f, 1.f, float(mt() / u32Max))
-	);
-	length = LinearVelocity.length();
-	LinearVelocity = (length == 0.f ? rp3d::Vector3(1.f, 0.f, 0.f) : LinearVelocity / length);
-	float const randomLinearVelocity = Lerp(Params.MinLinearVelocity, Params.MaxLinearVelocity, float(mt() / u32Max));
-	LinearVelocity *= randomLinearVelocity;
+	r.GetRandomVector(LinearVelocity);
+	LinearVelocity *= r.GetRandomFloat(Params.MinLinearVelocity, Params.MaxLinearVelocity);
+	
+	r.GetRandomVector(AngularVelocity);
+	AngularVelocity *= r.GetRandomFloat(Params.MinAngularVelocity, Params.MaxAngularVelocity);
 
-	AngularVelocity = Vector3
-	(
-		Lerp(-1.f, 1.f, float(mt() / u32Max)),
-		Lerp(-1.f, 1.f, float(mt() / u32Max)),
-		Lerp(-1.f, 1.f, float(mt() / u32Max))
-	);
-	length = AngularVelocity.length();
-	AngularVelocity = (length == 0.f ? Vector3(1.f, 0.f, 0.f) : AngularVelocity / length);
-	float const randomAngularVelocity = Lerp(Params.MinAngularVelocity, Params.MaxAngularVelocity, float(mt() / u32Max));
-	AngularVelocity *= randomAngularVelocity;
-
+	// Applying transforms to the rigid body.
 	if (!RigidBody) return;
-	Transform transform; transform.setFromOpenGL(reinterpret_cast<decimal*>(&ModelMatrix));
+	rp3d::Transform transform; transform.setFromOpenGL(reinterpret_cast<rp3d::decimal*>(&ModelMatrix));
 	RigidBody->setTransform(transform);
+
 	RigidBody->setLinearVelocity(LinearVelocity);
 	RigidBody->setAngularVelocity(AngularVelocity);
+
+	RigidBody->setMass(Mass);
 }

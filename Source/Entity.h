@@ -57,36 +57,8 @@ protected:
 	void ResetScale(); // Normalizes the model matrix's orientation vectors.
 
 public:
-	virtual CEntity& operator=(CEntity const& Other)
-	{
-		if (this == &Other) return *this;
-		if (World != Other.World)
-		{
-			assert(false);
-			std::cout << "CEntity& operator=(CEntity const&): *this and Other do not belong to the same game world (CWorld instance): Aborting copy!\n";
-			return *this;
-		}
-		if (Type != Other.Type)
-		{
-			assert(false);
-			std::cout
-				<< "CEntity& operator=(CEntity const&): *this and Other do not have the same type (EEntityType): Aborting copy!\n"
-				<< "Type of *this is: " << s_EntityNames[int(this->GetType())] << ".\n"
-				<< "Type of *this is: " << s_EntityNames[int(this->GetType())] << ".\n";
-			return *this;
-		}
-		Active = Other.Active;
-		PreviousTransform = Other.PreviousTransform;
-		NormalizingScalingFactor = Other.NormalizingScalingFactor;
-		Hp = Other.Hp;
-		Model = Other.Model;
-		ModelMatrix = Other.ModelMatrix;
-		RigidBody = Other.RigidBody;
-		Size = Other.Size;
-		DrawTextures = Other.DrawTextures;
-
-		return *this;
-	}
+	// Should this really be virtual?
+	virtual CEntity& operator=(CEntity const& Other);
 };
 
 class CAsteroid : public CEntity
@@ -105,12 +77,15 @@ public:
 		SParams() = default;
 		// In m.
 		glm::vec3 PlayerPosition = glm::vec3(0.f);
-		float MinSpawnDistanceFromPlayer = 100.f;
-		float MaxSpawnDistanceFromPlayer = 1000.f;
+		float MinSpawnDistanceFromPlayer = 500.f;
+		float MaxSpawnDistanceFromPlayer = 1500.f;
 		
 		// In m.
-		float MinSize = 100.f;
-		float MaxSize = 600.f;
+		float MinSize = 10.f;
+		float MaxSize = 100.f;
+		// In kg.
+		float MinMass = 2000.f;
+		float MaxMass = 20000.f;
 
 		// In rad/s and m/s.
 		float MinAngularVelocity = 0.05f, MaxAngularVelocity = 4.f;
@@ -120,6 +95,8 @@ public:
 	void Randomize(SParams const& Params = SParams());
 
 private:
+	float Mass = 2000.f;
+
 	rp3d::Vector3 LinearVelocity;
 	rp3d::Vector3 AngularVelocity;
 };
