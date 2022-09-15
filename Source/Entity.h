@@ -80,12 +80,12 @@ public:
 		SParams() = default;
 		// In m.
 		glm::vec3 PlayerPosition = glm::vec3(0.f);
-		float MinSpawnDistanceFromPlayer = 500.f;
-		float MaxSpawnDistanceFromPlayer = 1000.f;
+		float MinSpawnDistanceFromPlayer = 300.f;
+		float MaxSpawnDistanceFromPlayer = 2800.f;
 		
 		// In m.
-		float MinSize = 3.f;
-		float MaxSize = 70.f;
+		float MinSize = 8.f;
+		float MaxSize = 150.f;
 		// In kg.
 		float MinMass = 100.f;
 		float MaxMass = 10000.f;
@@ -104,7 +104,7 @@ private:
 	rp3d::Vector3 AngularVelocity;
 
 	// Asteroids despawn when they are this far from the Arwing.
-	float const DespawnDistance = 10000.f;
+	float const DespawnDistance = 3000.f;
 };
 
 // J'ai pas eu le temps... :(

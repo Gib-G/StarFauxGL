@@ -116,7 +116,7 @@ CEntity& CEntity::operator=(CEntity const& Other)
 
 	return *this;
 }
-//////////////////////			ASTEROIDS			///////////////////////////////
+///////////////////////////			ASTEROIDS			///////////////////////////////
 
 CAsteroid::CAsteroid(CWorld* const World, CModel* Model) : CEntity(World, EEntityType::Asteroid, Model)
 {
@@ -160,7 +160,7 @@ void CAsteroid::OnCollision(CEntity const& CollidedWith)
 	// Bon, ça a été fait un peu à l'arrache...
 	glm::vec3 const& temp = arwing->GetForwardAxis();
 	rp3d::Vector3 const arwingForwardAxis(temp.x, temp.y, temp.z);
-	RigidBody->setLinearVelocity(500.f * arwingForwardAxis); // Bumps the hit asteroid forward!
+	RigidBody->setLinearVelocity(600.f * arwingForwardAxis); // Bumps the hit asteroid forward!
 }
 
 void CAsteroid::Randomize(SParams const& Params)

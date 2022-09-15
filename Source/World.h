@@ -30,9 +30,9 @@ private:
 	float const WorldHalfExtent = 2.e5f; // The world is a 400000m cube.
 
 	// Time between two asteroid spawns.
-	float const AsteroidSpawnTime = 2.f; // In s.
+	float const AsteroidSpawnTime = 0.1f; // In s.
 	// How many asteroids to spawn at once.
-	uint16_t const AsteroidsToSpawn = 20;
+	uint16_t const AsteroidsToSpawn = 2;
 	
 	// The Arwing, the spacecraft controlled by the player.
 	CArwing Arwing = CArwing(this);
