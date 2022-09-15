@@ -12,7 +12,7 @@ class CEntityPool
 public:
 	CEntityPool()
 	{
-		// Little trick to avoid resorting to EntityType constructor of any kind.
+		// Little trick to avoid resorting to any kind of EntityType constructor.
 		Entities = reinterpret_cast<EntityType*>(new uint8_t[MaxNumberOfEntities * sizeof(EntityType)]);
 		NumberOfEntities = 0;
 		InactiveEntityIndexes[0] = 0;
@@ -25,9 +25,17 @@ public:
 		// Does nothing if the pool is already full.
 		if (NumberOfEntities == MaxNumberOfEntities) return;
 
-		CEntity& entity = *(CEntity*)(&Entities[NumberOfEntities]);
-		// Needs copy assignment operator.
+		EntityType* const pEntity = &Entities[NumberOfEntities];
+
+		// First, we just memcpy.
+		std::memcpy(pEntity, &Entity, sizeof(EntityType));
+
+		// Then we also call the copy assignement operator to potentially
+		// do more in-depth copy work than the simple shallow copy performed by memcpy.
+		// This requires EntityType and all its base classes to have trivial or user-defined copy assignment operators.
+		CEntity& entity = *reinterpret_cast<CEntity*>(pEntity);
 		entity = Entity;
+
 		entity.SetActive(false);
 
 		InactiveEntityIndexes[WriteIndex] = NumberOfEntities;

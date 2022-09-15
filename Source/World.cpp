@@ -26,9 +26,9 @@ CWorld::CWorld(GLFWwindow* const Window) : Window(Window)
 	Asteroid.Randomize();
 	Asteroid.InitializeRigidBody(PhysicsCommon, PhysicsWorld);
 	
-	// CAsteroid asteroid(this, &AsteroidModel);
-	// asteroid.InitializeRigidBody(PhysicsCommon, PhysicsWorld);
-	// AsteroidPool.FillWith(asteroid);
+	CAsteroid asteroid(this, &AsteroidModel);
+	asteroid.InitializeRigidBody(PhysicsCommon, PhysicsWorld);
+	AsteroidPool.FillWith(asteroid);
 	//for (int k = 0; k < 30; k++) SpawnAsteroid();
 }
 

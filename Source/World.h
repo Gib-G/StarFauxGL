@@ -39,7 +39,7 @@ private:
 	glm::mat4 SpaceBoxModelMatrix = glm::mat4(1.f);
 
 	CAsteroid Asteroid = CAsteroid(this);
-	// CEntityPool<CAsteroid, 200> AsteroidPool;
+	CEntityPool<CAsteroid, 200> AsteroidPool;
 	// SEntityPool<CLaser, 100> LaserPool;
 
 	// Physics.
