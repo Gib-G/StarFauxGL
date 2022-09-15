@@ -27,19 +27,26 @@ public:
 
 private:
 	// Used to scale the skybox (SpaceBox, 1 * 1 * 1 m cube).
-	float const WorldRadius = 2.e5f;
+	float const WorldHalfExtent = 2.e5f; // The world is a 400000m cube.
 
 	// Time between two asteroid spawns.
-	float AsteroidSpawnTime = 2.f; // In s.
+	float const AsteroidSpawnTime = 2.f; // In s.
+	// How many asteroids to spawn at once.
+	uint16_t const AsteroidsToSpawn = 20;
 	
+	// The Arwing, the spacecraft controlled by the player.
 	CArwing Arwing = CArwing(this);
+
+	// 3D models.
 	CModel ArwingModel;
 	CModel AsteroidModel;
 	CModel LaserModel;
 	CModel SpaceBoxModel;
 	glm::mat4 SpaceBoxModelMatrix = glm::mat4(1.f);
 
+	// The asteroid pool for constant-time acces and no instatiations in-game.
 	CEntityPool<CAsteroid, 6000> AsteroidPool;
+	// Pas le temps...
 	// CEntityPool<CLaser, 200> LaserPool;
 
 	// Physics.

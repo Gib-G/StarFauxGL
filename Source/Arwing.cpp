@@ -50,13 +50,11 @@ void CArwing::InitializeRigidBody(rp3d::PhysicsCommon& PhysicsCommon, rp3d::Phys
 	RigidBody->addCollider(box, rp3d::Transform::identity());
 
 	RigidBody->setType(BodyType::KINEMATIC);
-	//RigidBody->setMass(0.f);
-	//RigidBody->setMass(Mass);
+	// RigidBody->setMass(Mass);
 
 	RigidBody->setUserData(this);
 }
 
-// The Dt to pass here is the fixed one used for the physics simulation.
 void CArwing::Update(float const Dt)
 {
 	// Responding to keyboard inputs.

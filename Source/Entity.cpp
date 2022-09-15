@@ -38,6 +38,7 @@ void CEntity::Draw(glm::vec3 const& CameraPosition, glm::mat4 const& ViewMatrix,
 {
 	if (!Active) return;
 	if (!Model) return;
+
 	ResetScale();
 	ModelMatrix = glm::scale(ModelMatrix, glm::vec3(NormalizingScalingFactor * Size));
 	Model->Draw(CameraPosition, ModelMatrix, ViewMatrix, ProjectionMatrix, LightPosition, LightColor, !DrawTextures);
@@ -80,7 +81,7 @@ void CEntity::UpdateModelMatrixFromRigidBody(float const InterpolationFactor)
 	glm::vec4 y = ModelMatrix[1];
 	glm::vec4 z = ModelMatrix[2];
 	assert(x.w == 0.f && y.w == 0.f && z.w == 0.f);
-	//assert(glm::length(x) == 1.f && glm::length(y) == 1.f && glm::length(z) == 1.f);
+	// assert(glm::length(x) == 1.f && glm::length(y) == 1.f && glm::length(z) == 1.f);
 }
 
 CEntity& CEntity::operator=(CEntity const& Other)
@@ -107,7 +108,7 @@ CEntity& CEntity::operator=(CEntity const& Other)
 	Hp = Other.Hp;
 	Model = Other.Model;
 	ModelMatrix = Other.ModelMatrix;
-	// RigidBody = Other.RigidBody; OOOF
+	// RigidBody = Other.RigidBody; oof noooo don't do this!!
 	Size = Other.Size;
 	DrawTextures = Other.DrawTextures;
 
@@ -115,20 +116,21 @@ CEntity& CEntity::operator=(CEntity const& Other)
 
 	return *this;
 }
+//////////////////////			ASTEROIDS			///////////////////////////////
 
-////////	ASTEROIDS	 //////////
 CAsteroid::CAsteroid(CWorld* const World, CModel* Model) : CEntity(World, EEntityType::Asteroid, Model)
 {
-	DrawTextures = false;
+	DrawTextures = false; // If the model used for asteroids is the basic cube with no textures.
 	Randomize();
 }
 
-// !! Call Randomize before this to get the right size !!
+// !! Call Randomize before this to get the right size! !!
 void CAsteroid::InitializeRigidBody(rp3d::PhysicsCommon& PhysicsCommon, rp3d::PhysicsWorld* const PhysicsWorld)
 {
 	using namespace rp3d;
 	Transform transform; transform.setFromOpenGL(reinterpret_cast<decimal*>(&ModelMatrix));
 	RigidBody = PhysicsWorld->createRigidBody(transform);
+
 	SphereShape* const sphere = PhysicsCommon.createSphereShape(Size);
 	RigidBody->addCollider(sphere, Transform::identity());
 
@@ -155,9 +157,10 @@ void CAsteroid::OnCollision(CEntity const& CollidedWith)
 	CArwing const* arwing = dynamic_cast<CArwing const*>(&CollidedWith);
 	assert(arwing);
 
-	glm::vec3 const& f = arwing->GetForwardAxis();
-	rp3d::Vector3 ff(f.x, f.y, f.z);
-	RigidBody->setLinearVelocity(500.f * ff);
+	// Bon, ça a été fait un peu à l'arrache...
+	glm::vec3 const& temp = arwing->GetForwardAxis();
+	rp3d::Vector3 const arwingForwardAxis(temp.x, temp.y, temp.z);
+	RigidBody->setLinearVelocity(500.f * arwingForwardAxis); // Bumps the hit asteroid forward!
 }
 
 void CAsteroid::Randomize(SParams const& Params)

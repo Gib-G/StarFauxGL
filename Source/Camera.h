@@ -19,13 +19,12 @@ private:
 	glm::vec3 UpAxis{ 0.f, 1.f, 0.f };
 };
 
+// A camera that lags a few frames behind its actual target (the Arwing).
 template<uint8_t TargetBufferSize>
 class CCamera
 {
 public:
-	CCamera(CCameraTarget const& InitialTarget, float ForwardAxisOffset, float UpAxisOffset) :
-		ForwardAxisOffset{ ForwardAxisOffset },
-		UpAxisOffset{ UpAxisOffset }
+	CCamera(CCameraTarget const& InitialTarget, float ForwardAxisOffset, float UpAxisOffset) : ForwardAxisOffset{ ForwardAxisOffset }, UpAxisOffset{ UpAxisOffset }
 	{
 		static_assert(TargetBufferSize > 0);
 		// Prevents the camera from having the exact same location as its target.

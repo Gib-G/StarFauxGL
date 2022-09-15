@@ -2,36 +2,44 @@
 
 CWorld::CWorld(GLFWwindow* const Window) : Window(Window)
 {
+	// Creating a standard perpective projection matrix.
 	assert(Window);
 	int windowWidth, windowHeight;
 	glfwGetFramebufferSize(Window, &windowWidth, &windowHeight);
 	ProjectionMatrix = glm::perspective(45.f, float(windowWidth) / float(windowHeight), 1.f, 350000.f);
 
+	// ReactPhysics3D stuff.
 	PhysicsWorld = PhysicsCommon.createPhysicsWorld();
 	PhysicsWorld->setIsGravityEnabled(false);
 	PhysicsWorld->setEventListener(&CollisionListener);
 
+	// Loading models of the game.
 	ArwingModel.Load(ROOT_DIR"Resources\\Meshes\\Arwing\\arwing_starlink.fbx");
 	AsteroidModel.Load(ROOT_DIR"Resources\\Meshes\\Cube\\Cube.obj");
-	//AsteroidModel.Load(ROOT_DIR"Resources\\Meshes\\Asteroid\\asteroid.obj");
+	// AsteroidModel.Load(ROOT_DIR"Resources\\Meshes\\Asteroid\\asteroid.obj"); // Too many triangles, ça met mon GPU en PLS !
 	LaserModel.Load(ROOT_DIR"Resources\\Meshes\\Cube\\Cube.obj");
 	SpaceBoxModel.Load(ROOT_DIR"Resources\\Meshes\\SpaceBox\\space.obj");
-	SpaceBoxModelMatrix = glm::scale(SpaceBoxModelMatrix, glm::vec3(WorldRadius));
+	SpaceBoxModelMatrix = glm::scale(SpaceBoxModelMatrix, glm::vec3(WorldHalfExtent));
 
+	// Setting up the Arwing (the spacecraft controlled by the player).
 	Arwing.SetModel(&ArwingModel);
 	Arwing.InitializeRigidBody(PhysicsCommon, PhysicsWorld);
 	
+	// Filling the asteroid pool for constant-time acces and no instatiations in-game.
 	CAsteroid asteroid(this, &AsteroidModel);
 	asteroid.InitializeRigidBody(PhysicsCommon, PhysicsWorld);
 	AsteroidPool.FillWith(asteroid);
+	// asteroid is deleted at the end of this function.
+	// We call DestroyRigidBody to avoid that its rigid body remains dangling somewhere in ether...
 	asteroid.DestroyRigidBody(PhysicsWorld);
 
+	// Boom! Spawn 100 asteroids in one go!
 	for (int k = 0; k < 100; k++) SpawnAsteroid();
 }
 
 void CWorld::Update(float const Dt)
 {
-	// Regular updates.
+	// Arwing regular update.
 	Arwing.Update(Dt);
 	Camera.UpdateViewMatrix(Arwing.GetCameraTarget()); // À mettre plus bas peut-être...
 
@@ -45,13 +53,13 @@ void CWorld::Update(float const Dt)
 	InterpolationFactor = TimeAccumulator / PhysicsDt;
 	assert(0.f <= InterpolationFactor && InterpolationFactor <= 1.f);
 
-	//Asteroid.Update(Dt);
+	// Asteroids regular updates. There should have been the same thing for laser projectiles...
 	AsteroidPool.UpdateAllActiveEntities(Dt);
 
 	_Time += Dt;
 	if (_Time >= AsteroidSpawnTime)
 	{
-		for (int k = 0; k < 20; k++) SpawnAsteroid();
+		for (uint16_t k = 0; k < AsteroidsToSpawn; k++) SpawnAsteroid();
 		_Time = 0.f;
 	}
 }
@@ -64,7 +72,6 @@ void CWorld::Render()
 	SpaceBoxModel.Draw(cameraPosition, SpaceBoxModelMatrix, viewMatrix, ProjectionMatrix, LightPosition, LightColor);
 	Arwing.Draw(cameraPosition, viewMatrix, ProjectionMatrix, LightPosition, LightColor);
 
-	//Asteroid.Draw(cameraPosition, viewMatrix, ProjectionMatrix, LightPosition, LightColor);
 	AsteroidPool.DrawAllActiveEntities(cameraPosition, viewMatrix, ProjectionMatrix, LightPosition, LightColor);
 }
 

@@ -1,6 +1,7 @@
 #pragma once
 
 // A generic pool class to efficiently manage multiple entities in game.
+// (This is kinda kicking ass, ngl!)
 
 // Copy assignment operator for EntityType has to be defined in order to fill in the pool.
 // Otherwise, it won't compile...
@@ -28,13 +29,14 @@ public:
 		EntityType* const pEntity = &Entities[NumberOfEntities];
 
 		// First, we just memcpy.
+		// Note: This is kinda dodgy. What if the memory locations of Dst and Src overlap...
 		std::memcpy(pEntity, &Entity, sizeof(EntityType));
 
 		// Then we also call the copy assignement operator to potentially
 		// do more in-depth copy work than the simple shallow copy performed by memcpy.
 		// This requires EntityType and all its base classes to have trivial or user-defined copy assignment operators.
 		CEntity& entity = *reinterpret_cast<CEntity*>(pEntity);
-		entity = Entity;
+		entity = Entity; // Note: Careful with rigid body pointers management within CEntity::operator=.
 
 		entity.SetActive(false);
 
@@ -59,7 +61,7 @@ public:
 
 		EntityType* const entity = &Entities[InactiveEntityIndexes[ReadIndex]];
 		ReadIndex = (ReadIndex + 1) % MaxNumberOfEntities;
-		// Not using static_cast because CEntity might be abstract.
+		// Can't use static_cast because CEntity is abstract.
 		reinterpret_cast<CEntity*>(entity)->SetActive(true);
 
 		return entity;
@@ -70,7 +72,6 @@ public:
 	{
 		for (uint16_t index = 0; index < NumberOfEntities; index++)
 		{
-			// Not using static_cast because CEntity might be abstract.
 			CEntity* const entity = reinterpret_cast<CEntity*>(&Entities[index]);
 
 			// We can access entity->Active here, which is extremely dodgy since this attribute of
@@ -103,7 +104,7 @@ private:
 	uint16_t NumberOfEntities = 0;
 	uint16_t NumberOfInactiveEntities = 0;
 
-	// Contiguous heap storage for better performances.
+	// Contiguous heap storage for better performances (can allocate HUUGE chunks of memory tho).
 	EntityType* Entities = nullptr;
 
 	uint16_t InactiveEntityIndexes[Size];

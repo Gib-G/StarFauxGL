@@ -1,11 +1,12 @@
 #include "CollisionListener.h"
 #include "Entity.h"
 
+// Dispatch actions on collisions of 2 objects.
 void CCollisionListener::onContact(const CollisionCallback::CallbackData& callbackData)
 {
     using namespace rp3d;
 
-    std::cout << "Collision\n";
+    std::cout << "Collision!\n";
 
     for (uint16_t p = 0; p < callbackData.getNbContactPairs(); p++)
     {

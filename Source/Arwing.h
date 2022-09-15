@@ -12,21 +12,15 @@ public:
 	CArwing(CWorld* const World, CModel* const Model = nullptr);
 	virtual void InitializeRigidBody(rp3d::PhysicsCommon&, rp3d::PhysicsWorld* const) override;
 
-	// !! CLAMPING DONE IN UPDATE !!
-	// Linear motion. These only change the linear velocity. Motion is only applied when CArwing::Update is called.
-	// Dt = fixed physics simulation time step.
+	// Pass in the game dynamic delta time.
 	void Accelerate(float const Dt);
 	void Decelerate(float const Dt);
 
-	// !! CLAMPING DONE IN UPDATE !!
-	// Angular motion. These only change the angular velocities. Motion is only applied when CArwing::Update is called.
-	// Dt = fixed physics simulation time step.
 	void TurnLeft(float const Dt);
 	void TurnRight(float const Dt);
 	void GoUp(float const Dt);
 	void GoDown(float const Dt);
 
-	// The Dt to pass here is the fixed one used for the physics simulation.
 	virtual void Update(float const Dt) override;
 
 	// Normalized local vectors expressed in the world frame.
@@ -38,7 +32,7 @@ public:
 	// manipulated by the CCamera class.
 	CCameraTarget GetCameraTarget() const;
 
-	// For controling the Arwing from CWorld.
+	// For controlling the Arwing from CWorld.
 	bool ShouldGoUp = false;
 	bool ShouldGoDown = false;
 	bool ShouldTurnLeft = false;

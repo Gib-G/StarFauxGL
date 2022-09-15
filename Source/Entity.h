@@ -45,6 +45,8 @@ protected:
 
 	int Hp = 500;
 
+	// The entity has no ownership over its model.
+	// Do not call delete on this pointer within CEntity or its derived classes.
 	CModel* Model = nullptr;
 	glm::mat4 ModelMatrix = glm::mat4(1.f);
 	// Resource managed by rp3d::PhysicsCommon. Do not call delete on this pointer!!
@@ -105,6 +107,8 @@ private:
 	float const DespawnDistance = 10000.f;
 };
 
+// J'ai pas eu le temps... :(
+// We are supposed to be able to shot laser projectiles with the Arwing.
 class CLaser : public CEntity
 {
 
