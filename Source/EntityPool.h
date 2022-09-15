@@ -1,6 +1,6 @@
 #pragma once
 
-// A pool class to efficiently manage multiple entities in game.
+// A generic pool class to efficiently manage multiple entities in game.
 
 // Copy assignment operator for EntityType has to be defined in order to fill in the pool.
 // Otherwise, it won't compile...
@@ -13,7 +13,7 @@ public:
 	CEntityPool()
 	{
 		// Little trick to avoid resorting to EntityType constructor of any kind.
-		Entities = reinterpret_cast<EntityType*>(new uint8_t[NumberOfEntities * sizeof(EntityType)]);
+		Entities = reinterpret_cast<EntityType*>(new uint8_t[MaxNumberOfEntities * sizeof(EntityType)]);
 		NumberOfEntities = 0;
 		InactiveEntityIndexes[0] = 0;
 	}
@@ -24,7 +24,8 @@ public:
 	{
 		// Does nothing if the pool is already full.
 		if (NumberOfEntities == MaxNumberOfEntities) return;
-		CEntity& entity = *reinterpret_cast<CEntity*>(&Entities[NumberOfEntities]);
+
+		CEntity& entity = *(CEntity*)(&Entities[NumberOfEntities]);
 		// Needs copy assignment operator.
 		entity = Entity;
 		entity.SetActive(false);
@@ -38,7 +39,7 @@ public:
 	}
 	void FillWith(EntityType const& Entity)
 	{
-		for (uint16_t index; index = 0; index++) AddEntity(Entity);
+		for (uint16_t index = 0; index < MaxNumberOfEntities; index++) AddEntity(Entity);
 	}
 
 	// Returns nullptr in case no inactive entity is available.
@@ -75,6 +76,15 @@ public:
 				InactiveEntityIndexes[WriteIndex] = index;
 				WriteIndex = (WriteIndex + 1) % MaxNumberOfEntities;
 			}
+		}
+	}
+
+	void DrawAllActiveEntities(glm::vec3 const& CameraPosition, glm::mat4 const& ViewMatrix, glm::mat4 const& ProjectionMatrix, glm::vec3 const& LightPosition, glm::vec3 const& LightColor)
+	{
+		for (uint16_t index = 0; index < NumberOfEntities; index++)
+		{
+			CEntity* const entity = reinterpret_cast<CEntity*>(&Entities[index]);
+			if (entity->IsActive()) entity->Draw(CameraPosition, ViewMatrix, ProjectionMatrix, LightPosition, LightColor);
 		}
 	}
 

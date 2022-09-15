@@ -9,8 +9,10 @@ CWorld::CWorld(GLFWwindow* const Window) : Window(Window)
 
 	PhysicsWorld = PhysicsCommon.createPhysicsWorld();
 	PhysicsWorld->setIsGravityEnabled(false);
+	PhysicsWorld->setEventListener(&listener);
 
 	ArwingModel.Load(ROOT_DIR"Resources\\Meshes\\Arwing\\arwing_starlink.fbx");
+	AsteroidModel.Load(ROOT_DIR"Resources\\Meshes\\Cube\\Cube.obj");
 	//AsteroidModel.Load(ROOT_DIR"Resources\\Meshes\\Asteroid\\asteroid.obj");
 	LaserModel.Load(ROOT_DIR"Resources\\Meshes\\Laser\\laser.obj");
 	SpaceBoxModel.Load(ROOT_DIR"Resources\\Meshes\\SpaceBox\\space.obj");
@@ -19,8 +21,15 @@ CWorld::CWorld(GLFWwindow* const Window) : Window(Window)
 	Arwing.SetModel(&ArwingModel);
 	Arwing.InitializeRigidBody(PhysicsCommon, PhysicsWorld);
 
-	//CAsteroid asteroid(this, &AsteroidModel);
-	//AsteroidPool.FillWith(asteroid);
+	Asteroid.SetModel(&AsteroidModel);
+	Asteroid.Randomize();
+	Asteroid.Randomize();
+	Asteroid.InitializeRigidBody(PhysicsCommon, PhysicsWorld);
+	
+	// CAsteroid asteroid(this, &AsteroidModel);
+	// asteroid.InitializeRigidBody(PhysicsCommon, PhysicsWorld);
+	// AsteroidPool.FillWith(asteroid);
+	//for (int k = 0; k < 30; k++) SpawnAsteroid();
 }
 
 void CWorld::Update(float const Dt)
@@ -28,7 +37,7 @@ void CWorld::Update(float const Dt)
 	// Regular updates.
 	Arwing.Update(Dt);
 	Camera.UpdateViewMatrix(Arwing.GetCameraTarget()); // À mettre plus bas peut-être...
-	
+
 	// Physics update.
 	TimeAccumulator += Dt;
 	while (TimeAccumulator >= PhysicsDt)
@@ -36,11 +45,14 @@ void CWorld::Update(float const Dt)
 		PhysicsWorld->update(PhysicsDt);
 		TimeAccumulator -= PhysicsDt;
 	}
-	float const interpolationFactor = TimeAccumulator / PhysicsDt;
-	assert(0.f <= interpolationFactor && interpolationFactor <= 1.f);
+	InterpolationFactor = TimeAccumulator / PhysicsDt;
+	assert(0.f <= InterpolationFactor && InterpolationFactor <= 1.f);
+
+	Asteroid.Update(Dt);
+	//AsteroidPool.UpdateAllActiveEntities(Dt);
 
 	_Time += Dt;
-	if (_Time >= AsteroidSpawnTime) { SpawnAsteroid(); _Time = 0.f; }
+	//if (_Time >= AsteroidSpawnTime) { SpawnAsteroid(); _Time = 0.f; }
 }
 
 void CWorld::Render()
@@ -50,6 +62,8 @@ void CWorld::Render()
 
 	SpaceBoxModel.Draw(cameraPosition, SpaceBoxModelMatrix, viewMatrix, ProjectionMatrix, LightPosition, LightColor);
 	Arwing.Draw(cameraPosition, viewMatrix, ProjectionMatrix, LightPosition, LightColor);
+
+	Asteroid.Draw(cameraPosition, viewMatrix, ProjectionMatrix, LightPosition, LightColor);
 }
 
 void CWorld::HandleKeyboardInputs(int Key, int Scancode, int Action, int Mods)
@@ -58,7 +72,7 @@ void CWorld::HandleKeyboardInputs(int Key, int Scancode, int Action, int Mods)
 
 	if (Action == GLFW_PRESS)
 	{
-		if (Key == GLFW_KEY_Z) Arwing.ShouldAccelerate = true;
+		if (Key == GLFW_KEY_W) Arwing.ShouldAccelerate = true;
 		if (Key == GLFW_KEY_S) Arwing.ShouldDecelerate = true;
 		if (Key == GLFW_KEY_UP) Arwing.ShouldGoUp = true;
 		if (Key == GLFW_KEY_DOWN) Arwing.ShouldGoDown = true;
@@ -67,7 +81,7 @@ void CWorld::HandleKeyboardInputs(int Key, int Scancode, int Action, int Mods)
 	}
 	else if (Action == GLFW_RELEASE)
 	{
-		if (Key == GLFW_KEY_Z) Arwing.ShouldAccelerate = false;
+		if (Key == GLFW_KEY_W) Arwing.ShouldAccelerate = false;
 		if (Key == GLFW_KEY_S) Arwing.ShouldDecelerate = false;
 		if (Key == GLFW_KEY_UP) Arwing.ShouldGoUp = false;
 		if (Key == GLFW_KEY_DOWN) Arwing.ShouldGoDown = false;
@@ -78,9 +92,7 @@ void CWorld::HandleKeyboardInputs(int Key, int Scancode, int Action, int Mods)
 
 void CWorld::SpawnAsteroid()
 {
-	/*
-	CAsteroid& asteroid = *AsteroidPool.GetInactiveEntity();
-	asteroid.Randomize();
-	asteroid.SetActive(true);
-	*/
+	//CAsteroid& asteroid = *AsteroidPool.GetInactiveEntity();
+	//asteroid.Randomize();
+	//asteroid.SetActive(true);
 }

@@ -45,12 +45,15 @@ void CArwing::InitializeRigidBody(rp3d::PhysicsCommon& PhysicsCommon, rp3d::Phys
 	Transform transform; transform.setFromOpenGL(reinterpret_cast<decimal*>(&ModelMatrix));
 	RigidBody = PhysicsWorld->createRigidBody(transform);
 
-	Vector3 const boxHalfExtents = 0.5f * Model->GetAABB().GetLength();
+	Vector3 const boxHalfExtents = 0.5f * NormalizingScalingFactor * Size * Model->GetAABB().GetLength();
 	BoxShape* box = PhysicsCommon.createBoxShape(boxHalfExtents);
 	RigidBody->addCollider(box, rp3d::Transform::identity());
 
 	RigidBody->setType(BodyType::KINEMATIC);
-	RigidBody->setMass(Mass);
+	//RigidBody->setMass(0.f);
+	//RigidBody->setMass(Mass);
+
+	RigidBody->setUserData(this);
 }
 
 // The Dt to pass here is the fixed one used for the physics simulation.
@@ -100,6 +103,11 @@ void CArwing::Update(float const Dt)
 	if (!RigidBody) return;
 	Transform transform; transform.setFromOpenGL(reinterpret_cast<decimal*>(&ModelMatrix));
 	RigidBody->setTransform(transform);
+
+	Vector3 const& p = RigidBody->getTransform().getPosition();
+	glm::vec3 const& pos = GetPosition();
+	std::cout << "Pos: " << pos.x << ";       " << pos.y << ";       " << pos.z << "\n";
+	std::cout << "RB Pos: " << p.x << ";       " << p.y << ";       " << p.z << "\n\n";
 }
 
 void CArwing::Accelerate(float const Dt)

@@ -58,6 +58,9 @@
     <ClCompile Include="Source\World.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\CollisionListener.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Arwing.h">
@@ -115,6 +118,9 @@
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\EntityPool.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CollisionListener.h">
       <Filter>Source</Filter>
     </ClInclude>
   </ItemGroup>

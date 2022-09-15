@@ -1,5 +1,5 @@
 #pragma once
-#include <reactphysics3d/reactphysics3d.h>
+#include "CollisionListener.h"
 #include "Model.h"
 #include "Arwing.h"
 #include "Camera.h"
@@ -19,6 +19,8 @@ public:
 
 	void SpawnAsteroid();
 
+	float GetInterpolationFactor() const { return InterpolationFactor; }
+
 private:
 	// Used to scale the skybox (SpaceBox, 1 * 1 * 1 m cube).
 	float const WorldRadius = 2.e5f;
@@ -36,14 +38,17 @@ private:
 	CModel SpaceBoxModel;
 	glm::mat4 SpaceBoxModelMatrix = glm::mat4(1.f);
 
-	CEntityPool<CAsteroid, 200> AsteroidPool;
-	//SEntityPool<CLaser, 100> LaserPool;
+	CAsteroid Asteroid = CAsteroid(this);
+	// CEntityPool<CAsteroid, 200> AsteroidPool;
+	// SEntityPool<CLaser, 100> LaserPool;
 
 	// Physics.
 	rp3d::PhysicsCommon PhysicsCommon;
 	rp3d::PhysicsWorld* PhysicsWorld = nullptr;
+	CCollisionListener listener;
 	float const PhysicsDt = 1.f / 60.f;
 	float TimeAccumulator = 0.f;
+	float InterpolationFactor = 0.f;
 
 	// Rendering stuff.
 	GLFWwindow* const Window = nullptr;

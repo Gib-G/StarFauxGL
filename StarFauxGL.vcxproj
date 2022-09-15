@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\CollisionListener.cpp" />
     <ClCompile Include="Source\Entity.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\Arwing.cpp" />
@@ -42,6 +43,7 @@
     <ClInclude Include="Source\Axes.h" />
     <ClInclude Include="Source\Camera.h" />
     <ClInclude Include="Source\CImage.h" />
+    <ClInclude Include="Source\CollisionListener.h" />
     <ClInclude Include="Source\Entity.h" />
     <ClInclude Include="Source\EntityPool.h" />
     <ClInclude Include="Source\FileUtil.h" />
