@@ -23,16 +23,15 @@ public:
 
 	void InitializeRigidBody(CEntity& Entity);
 
+	glm::vec3 GetArwingPosition() const { return Arwing.GetPosition(); }
+
 private:
 	// Used to scale the skybox (SpaceBox, 1 * 1 * 1 m cube).
 	float const WorldRadius = 2.e5f;
 
 	// Time between two asteroid spawns.
-	float AsteroidSpawnTime = 4.f; // In s.
-	// Asteroids and lasers despawn (get deactivated) when they are beyond this distance from the Arwing.
-	float const AsteroidDespawnDistance = 1500.f;
-	float const LaserDespawnDistance = 1500.f;
-
+	float AsteroidSpawnTime = 2.f; // In s.
+	
 	CArwing Arwing = CArwing(this);
 	CModel ArwingModel;
 	CModel AsteroidModel;
@@ -40,13 +39,13 @@ private:
 	CModel SpaceBoxModel;
 	glm::mat4 SpaceBoxModelMatrix = glm::mat4(1.f);
 
-	CEntityPool<CAsteroid, 200> AsteroidPool;
+	CEntityPool<CAsteroid, 6000> AsteroidPool;
 	// CEntityPool<CLaser, 200> LaserPool;
 
 	// Physics.
 	rp3d::PhysicsCommon PhysicsCommon;
 	rp3d::PhysicsWorld* PhysicsWorld = nullptr;
-	CCollisionListener listener;
+	CCollisionListener CollisionListener;
 	float const PhysicsDt = 1.f / 60.f;
 	float TimeAccumulator = 0.f;
 	float InterpolationFactor = 0.f;

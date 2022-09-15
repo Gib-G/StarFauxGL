@@ -9,12 +9,12 @@ CWorld::CWorld(GLFWwindow* const Window) : Window(Window)
 
 	PhysicsWorld = PhysicsCommon.createPhysicsWorld();
 	PhysicsWorld->setIsGravityEnabled(false);
-	PhysicsWorld->setEventListener(&listener);
+	PhysicsWorld->setEventListener(&CollisionListener);
 
 	ArwingModel.Load(ROOT_DIR"Resources\\Meshes\\Arwing\\arwing_starlink.fbx");
 	AsteroidModel.Load(ROOT_DIR"Resources\\Meshes\\Cube\\Cube.obj");
 	//AsteroidModel.Load(ROOT_DIR"Resources\\Meshes\\Asteroid\\asteroid.obj");
-	LaserModel.Load(ROOT_DIR"Resources\\Meshes\\Laser\\laser.obj");
+	LaserModel.Load(ROOT_DIR"Resources\\Meshes\\Cube\\Cube.obj");
 	SpaceBoxModel.Load(ROOT_DIR"Resources\\Meshes\\SpaceBox\\space.obj");
 	SpaceBoxModelMatrix = glm::scale(SpaceBoxModelMatrix, glm::vec3(WorldRadius));
 
@@ -24,8 +24,9 @@ CWorld::CWorld(GLFWwindow* const Window) : Window(Window)
 	CAsteroid asteroid(this, &AsteroidModel);
 	asteroid.InitializeRigidBody(PhysicsCommon, PhysicsWorld);
 	AsteroidPool.FillWith(asteroid);
+	asteroid.DestroyRigidBody(PhysicsWorld);
 
-	for (int k = 0; k < 30; k++) SpawnAsteroid();
+	for (int k = 0; k < 100; k++) SpawnAsteroid();
 }
 
 void CWorld::Update(float const Dt)
@@ -48,7 +49,11 @@ void CWorld::Update(float const Dt)
 	AsteroidPool.UpdateAllActiveEntities(Dt);
 
 	_Time += Dt;
-	//if (_Time >= AsteroidSpawnTime) { SpawnAsteroid(); _Time = 0.f; }
+	if (_Time >= AsteroidSpawnTime)
+	{
+		for (int k = 0; k < 20; k++) SpawnAsteroid();
+		_Time = 0.f;
+	}
 }
 
 void CWorld::Render()
@@ -89,13 +94,14 @@ void CWorld::HandleKeyboardInputs(int Key, int Scancode, int Action, int Mods)
 
 void CWorld::SpawnAsteroid()
 {
-	CAsteroid& asteroid = *AsteroidPool.GetInactiveEntity();
+	CAsteroid* const asteroid = AsteroidPool.GetInactiveEntity();
+	if (!asteroid) return;
 
 	CAsteroid::SParams params;
 	params.PlayerPosition = Arwing.GetPosition();
 
-	asteroid.Randomize(params);
-	asteroid.SetActive(true);
+	asteroid->Randomize(params);
+	asteroid->SetActive(true);
 }
 
 void CWorld::InitializeRigidBody(CEntity& Entity)

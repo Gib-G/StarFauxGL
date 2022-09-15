@@ -25,6 +25,12 @@ void CEntity::SetModel(CModel* const Model)
 }
 void CEntity::InitializeRigidBody(rp3d::PhysicsCommon&, rp3d::PhysicsWorld* const) { RigidBody = nullptr; }
 
+void CEntity::DestroyRigidBody(rp3d::PhysicsWorld* const PhysicsWorld)
+{
+	if (RigidBody) PhysicsWorld->destroyRigidBody(RigidBody);
+	RigidBody = nullptr;
+}
+
 EEntityType CEntity::GetType() const { return Type; }
 glm::vec3 CEntity::GetPosition() const { return glm::vec3(ModelMatrix[3]); }
 
@@ -135,6 +141,9 @@ void CAsteroid::InitializeRigidBody(rp3d::PhysicsCommon& PhysicsCommon, rp3d::Ph
 
 void CAsteroid::Update(float const Dt)
 {
+	// Despawn.
+	if (glm::length(World->GetArwingPosition() - GetPosition()) >= DespawnDistance) SetActive(false);
+
 	UpdateModelMatrixFromRigidBody(World->GetInterpolationFactor());
 }
 

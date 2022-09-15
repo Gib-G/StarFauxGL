@@ -16,6 +16,7 @@ public:
 	
 	void SetModel(CModel* const);
 	virtual void InitializeRigidBody(rp3d::PhysicsCommon&, rp3d::PhysicsWorld* const);
+	void DestroyRigidBody(rp3d::PhysicsWorld* const);
 
 	EEntityType GetType() const;
 	glm::vec3 GetPosition() const;
@@ -78,14 +79,14 @@ public:
 		// In m.
 		glm::vec3 PlayerPosition = glm::vec3(0.f);
 		float MinSpawnDistanceFromPlayer = 500.f;
-		float MaxSpawnDistanceFromPlayer = 1500.f;
+		float MaxSpawnDistanceFromPlayer = 1000.f;
 		
 		// In m.
-		float MinSize = 10.f;
-		float MaxSize = 100.f;
+		float MinSize = 3.f;
+		float MaxSize = 70.f;
 		// In kg.
-		float MinMass = 2000.f;
-		float MaxMass = 20000.f;
+		float MinMass = 100.f;
+		float MaxMass = 10000.f;
 
 		// In rad/s and m/s.
 		float MinAngularVelocity = 0.05f, MaxAngularVelocity = 4.f;
@@ -99,6 +100,9 @@ private:
 
 	rp3d::Vector3 LinearVelocity;
 	rp3d::Vector3 AngularVelocity;
+
+	// Asteroids despawn when they are this far from the Arwing.
+	float const DespawnDistance = 10000.f;
 };
 
 class CLaser : public CEntity
