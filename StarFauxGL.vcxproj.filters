@@ -19,9 +19,6 @@
     <ClCompile Include="Source\CImage.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\FileUtil.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Font.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -31,16 +28,7 @@
     <ClCompile Include="Source\Model.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Physics.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Shader.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\STLUtil.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\StringFileUtil.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\StringUtil.cpp">
@@ -61,6 +49,9 @@
     <ClCompile Include="Source\CollisionListener.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\FileUtil.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Arwing.h">
@@ -72,9 +63,6 @@
     <ClInclude Include="Source\CImage.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="Source\FileUtil.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Font.h">
       <Filter>Source</Filter>
     </ClInclude>
@@ -84,16 +72,7 @@
     <ClInclude Include="Source\Model.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Physics.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Shader.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\STLUtil.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\StringFileUtil.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\StringUtil.h">
@@ -121,6 +100,9 @@
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\CollisionListener.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\FileUtil.h">
       <Filter>Source</Filter>
     </ClInclude>
   </ItemGroup>

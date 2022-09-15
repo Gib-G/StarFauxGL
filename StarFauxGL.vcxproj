@@ -21,18 +21,15 @@
   <ItemGroup>
     <ClCompile Include="Source\CollisionListener.cpp" />
     <ClCompile Include="Source\Entity.cpp" />
+    <ClCompile Include="Source\FileUtil.cpp" />
     <ClCompile Include="Source\Main.cpp" />
     <ClCompile Include="Source\Arwing.cpp" />
     <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\CImage.cpp" />
-    <ClCompile Include="Source\FileUtil.cpp" />
     <ClCompile Include="Source\Font.cpp" />
     <ClCompile Include="Source\Mesh.cpp" />
     <ClCompile Include="Source\Model.cpp" />
-    <ClCompile Include="Source\Physics.cpp" />
     <ClCompile Include="Source\Shader.cpp" />
-    <ClCompile Include="Source\STLUtil.cpp" />
-    <ClCompile Include="Source\StringFileUtil.cpp" />
     <ClCompile Include="Source\StringUtil.cpp" />
     <ClCompile Include="Source\Texture.cpp" />
     <ClCompile Include="Source\Util.cpp" />
@@ -50,10 +47,7 @@
     <ClInclude Include="Source\Font.h" />
     <ClInclude Include="Source\Mesh.h" />
     <ClInclude Include="Source\Model.h" />
-    <ClInclude Include="Source\Physics.h" />
     <ClInclude Include="Source\Shader.h" />
-    <ClInclude Include="Source\STLUtil.h" />
-    <ClInclude Include="Source\StringFileUtil.h" />
     <ClInclude Include="Source\StringUtil.h" />
     <ClInclude Include="Source\Texture.h" />
     <ClInclude Include="Source\Types.h" />
